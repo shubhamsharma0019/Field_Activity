@@ -145,6 +145,11 @@ Route::middleware('auth:sanctum')->group(function () {
         'worker'
     ]);
 
+    Route::get('/worker/assignments', [
+        ProjectAssignmentController::class,
+        'workerIndex'
+    ]);
+
 
     /*
     |--------------------------------------------------------------------------

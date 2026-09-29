@@ -81,6 +81,7 @@
 .role-badge.worker { background: #e5f1ff; color: #1764d5; }
 .role-badge.company { background: #f0e7ff; color: #7439d5; }
 .role-badge.admin { background: #ffe8e9; color: #d33543; }
+.role-badge.super_admin { background: #fff3d9; color: #9a5b05; }
 .user-action { width: 32px; height: 32px; }
 
 /* Tablet and mobile */

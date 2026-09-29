@@ -31,18 +31,8 @@
     });
 
     document.getElementById('create-project-form').addEventListener('submit', function (event) {
-        event.preventDefault();
-
         if (!event.currentTarget.reportValidity()) {
-            return;
+            event.preventDefault();
         }
-
-        const toast = document.getElementById('project-create-toast');
-        toast.textContent = 'Project saved in design preview.';
-        toast.hidden = false;
-
-        setTimeout(function () {
-            toast.hidden = true;
-        }, 3000);
     });
 })();

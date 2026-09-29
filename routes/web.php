@@ -1,48 +1,93 @@
 <?php
 
+use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\ActivitySessionPageController;
+use App\Http\Controllers\ActivityTypePageController;
+use App\Http\Controllers\ActivityUpdatePageController;
+use App\Http\Controllers\AssignmentPageController;
+use App\Http\Controllers\CompanyPageController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProjectPageController;
+use App\Http\Controllers\ProjectActivityPageController;
+use App\Http\Controllers\ReportPageController;
+use App\Http\Controllers\SettingsPageController;
+use App\Http\Controllers\SubmissionPageController;
+use App\Http\Controllers\UserPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/admin/login');
 
-Route::view('/admin/login', 'admin_login.index')->name('admin.login');
+Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
+    ->name('admin.login');
+
+Route::post('/admin/login', [AdminAuthController::class, 'login'])
+    ->name('admin.login.submit');
 
 // Laravel uses this route name when an unauthenticated browser opens a protected URL.
-Route::view('/login', 'admin_login.index')->name('login');
+Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
 
-Route::view('/dashboard', 'dashboard.index')->name('web.dashboard');
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('admin.logout');
 
-Route::view('/companies', 'companies.index')->name('web.companies.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('web.dashboard');
 
-Route::view('/companies/create', 'companies.create')->name('web.companies.create');
+    Route::get('/companies', [CompanyPageController::class, 'index'])->name('web.companies.index');
 
-Route::view('/users', 'users.index')->name('web.users.index');
+    Route::get('/companies/create', [CompanyPageController::class, 'create'])->name('web.companies.create');
 
-Route::view('/users/create', 'users.create')->name('web.users.create');
+    Route::post('/companies', [CompanyPageController::class, 'store'])->name('web.companies.store');
 
-Route::view('/projects', 'projects.index')->name('web.projects.index');
+    Route::get('/users', [UserPageController::class, 'index'])->name('web.users.index');
 
-Route::view('/projects/create', 'projects.create')->name('web.projects.create');
+    Route::view('/users/create', 'users.create')->name('web.users.create');
 
-Route::view('/activity-types', 'activity_types.index')->name('web.activity-types.index');
+    Route::get('/projects', [ProjectPageController::class, 'index'])->name('web.projects.index');
 
-Route::view('/activity-types/create', 'activity_types.create')->name('web.activity-types.create');
+    Route::get('/projects/create', [ProjectPageController::class, 'create'])->name('web.projects.create');
 
-Route::view('/assignments', 'assignments.index')->name('web.assignments.index');
+    Route::post('/projects', [ProjectPageController::class, 'store'])->name('web.projects.store');
 
-Route::view('/assignments/create', 'assignments.create')->name('web.assignments.create');
+    Route::get('/activity-types', [ActivityTypePageController::class, 'index'])->name('web.activity-types.index');
 
-Route::view('/submissions', 'submissions.index')->name('web.submissions.index');
+    Route::post('/activity-types', [ActivityTypePageController::class, 'store'])->name('web.activity-types.store');
 
-Route::view('/activity-sessions', 'activity_sessions.index')->name('web.activity-sessions.index');
+    Route::view('/activity-types/create', 'activity_types.create')->name('web.activity-types.create');
 
-Route::view('/activity-sessions/live-tracking', 'activity_sessions.live')->name('web.activity-sessions.live');
+    Route::get('/assignments', [AssignmentPageController::class, 'index'])->name('web.assignments.index');
 
-Route::view('/activity-sessions/SES0001', 'activity_sessions.show')->name('web.activity-sessions.show');
+    Route::post('/assignments', [AssignmentPageController::class, 'store'])->name('web.assignments.store');
 
-Route::view('/activity-sessions/map', 'activity_sessions.map')->name('web.activity-sessions.map');
+    Route::view('/assignments/create', 'assignments.create')->name('web.assignments.create');
 
-Route::view('/reports', 'reports.index')->name('web.reports.index');
+    Route::get('/project-activities/create', [ProjectActivityPageController::class, 'create'])->name('web.project-activities.create');
 
-Route::view('/settings', 'settings.index')->name('web.settings.index');
+    Route::post('/project-activities', [ProjectActivityPageController::class, 'store'])->name('web.project-activities.store');
 
-Route::view('/activity-updates', 'activity_updates.index')->name('web.activity-updates.index');
+    Route::get('/submissions', [SubmissionPageController::class, 'index'])->name('web.submissions.index');
+
+    Route::post('/submissions/{submission}/review', [SubmissionPageController::class, 'review'])->name('web.submissions.review');
+
+    Route::get('/activity-sessions', [ActivitySessionPageController::class, 'index'])->name('web.activity-sessions.index');
+
+    Route::post('/activity-sessions/{session}/review', [ActivitySessionPageController::class, 'review'])->name('web.activity-sessions.review');
+
+    Route::view('/activity-sessions/live-tracking', 'activity_sessions.live')->name('web.activity-sessions.live');
+
+    Route::view('/activity-sessions/SES0001', 'activity_sessions.show')->name('web.activity-sessions.show');
+
+    Route::view('/activity-sessions/map', 'activity_sessions.map')->name('web.activity-sessions.map');
+
+    Route::get('/reports', [ReportPageController::class, 'index'])->name('web.reports.index');
+
+    Route::get('/settings', [SettingsPageController::class, 'index'])->name('web.settings.index');
+
+    Route::post('/settings', [SettingsPageController::class, 'update'])->name('web.settings.update');
+
+    Route::get('/settings/export', [SettingsPageController::class, 'export'])->name('web.settings.export');
+
+    Route::post('/settings/clear-cache', [SettingsPageController::class, 'clearCache'])->name('web.settings.clear-cache');
+
+    Route::get('/activity-updates', [ActivityUpdatePageController::class, 'index'])->name('web.activity-updates.index');
+});

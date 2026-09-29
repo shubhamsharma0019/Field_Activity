@@ -127,6 +127,78 @@ class ProjectAssignmentController extends Controller
     }
 
     /**
+     * Mobile worker assignment list.
+     *
+     * Kept separate from the admin index response so Flutter can consume a
+     * simple list without having to unwrap Laravel pagination.
+     */
+    public function workerIndex(Request $request): JsonResponse
+    {
+        $worker = $request->user();
+
+        if ($worker->role !== 'worker') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only workers can view this assignment list.',
+            ], 403);
+        }
+
+        $assignments = ProjectAssignment::with([
+            'project.company',
+            'projectActivity.activityType',
+        ])
+            ->where('worker_id', $worker->id)
+            ->whereIn('status', [
+                'assigned',
+                'in_progress',
+                'pending_approval',
+                'completed',
+            ])
+            ->latest('assigned_date')
+            ->latest('id')
+            ->get()
+            ->map(function (ProjectAssignment $assignment): array {
+                $activityType = $assignment->projectActivity?->activityType;
+
+                return [
+                    'id' => $assignment->id,
+                    'assignment_id' => $assignment->id,
+                    'project_id' => $assignment->project_id,
+                    'project_activity_id' => $assignment->project_activity_id,
+                    'title' => $assignment->projectActivity?->name,
+                    'project_name' => $assignment->project?->name,
+                    'company_name' => $assignment->project?->company?->name,
+                    'activity_type' => $activityType?->name,
+                    'activity_mode' => $activityType?->activity_mode,
+                    'tracking_required' => (bool) $assignment->tracking_required,
+                    'target_quantity' => $assignment->target_quantity,
+                    'completed_quantity' => $assignment->completed_quantity,
+                    'assigned_date' => $assignment->assigned_date?->toDateString(),
+                    'start_date' => $assignment->projectActivity?->start_date?->toDateString(),
+                    'end_date' => $assignment->projectActivity?->end_date?->toDateString(),
+                    'status' => $assignment->status,
+                    'instructions' => $assignment->projectActivity?->instructions,
+                    'location' => trim(collect([
+                        $assignment->project?->area,
+                        $assignment->project?->city,
+                        $assignment->project?->state,
+                    ])->filter()->implode(', ')),
+                    'project' => $assignment->project,
+                    'project_activity' => $assignment->projectActivity,
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Worker assignments fetched successfully.',
+            'data' => [
+                'assignments' => $assignments,
+            ],
+        ]);
+    }
+
+    /**
      * Create worker assignment.
      *
      * Only Admin / Super Admin.

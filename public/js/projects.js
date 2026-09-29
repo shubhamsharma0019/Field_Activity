@@ -1,39 +1,48 @@
 (() => {
-    // Sample project data for the design preview.
-    const projects = [
-        ['City Clean Drive', 'ABC Company', 'New Delhi, Delhi', '01 Sep 2026', '30 Sep 2026', 'Active', 75, 12],
-        ['Market Survey', 'XYZ Pvt Ltd', 'Noida, UP', '15 Aug 2026', '30 Sep 2026', 'Active', 45, 8],
-        ['River Awareness', 'Sunrise Corp', 'Gurgaon, HR', '01 Sep 2026', '15 Oct 2026', 'On Hold', 30, 6],
-        ['Green City Initiative', 'GreenTech', 'Faridabad, HR', '01 Oct 2026', '31 Oct 2026', 'Active', 60, 10],
-        ['Poster Installation', 'BuildWell', 'Ghaziabad, UP', '20 Aug 2026', '20 Sep 2026', 'Completed', 100, 15],
-        ['Shop Visit Campaign', 'Infra Solutions', 'Lucknow, UP', '05 Sep 2026', '30 Sep 2026', 'Active', 40, 9],
-        ['Road Show', 'Metro Constructions', 'Jaipur, RJ', '12 Jul 2026', '30 Sep 2026', 'Active', 55, 11],
-        ['Visit Shops', 'Urban Developers', 'Indore, MP', '25 Aug 2026', '25 Sep 2026', 'On Hold', 20, 5],
-    ];
-
+    const projects = Array.isArray(window.projectsData) ? window.projectsData : [];
     let currentPage = 1;
+
     const searchInput = document.getElementById('project-search');
     const companySelect = document.getElementById('project-company');
     const statusSelect = document.getElementById('project-status');
     const dateInput = document.getElementById('project-date');
     const pageSizeSelect = document.getElementById('project-page-size');
+    const rows = document.getElementById('project-rows');
+
+    function escapeText(value) {
+        const element = document.createElement('span');
+        element.textContent = value === null || value === undefined || value === '' ? '-' : String(value);
+        return element.innerHTML;
+    }
 
     function getFilteredProjects() {
-        const searchText = searchInput.value.toLowerCase();
+        const searchText = searchInput.value.toLowerCase().trim();
 
         return projects.filter(function (project) {
-            const projectText = project.join(' ').toLowerCase();
-            const matchesSearch = projectText.includes(searchText);
-            const matchesCompany = companySelect.value === 'all' || project[1] === companySelect.value;
-            const matchesStatus = statusSelect.value === 'all' || project[5] === statusSelect.value;
+            const projectText = [
+                project.name,
+                project.project_code,
+                project.project_type_label,
+                project.company,
+                project.location,
+                project.status_label,
+            ].join(' ').toLowerCase();
 
-            return matchesSearch && matchesCompany && matchesStatus;
+            const matchesSearch = projectText.includes(searchText);
+            const matchesCompany = companySelect.value === 'all'
+                || (companySelect.value === 'internal' && project.project_type === 'internal')
+                || String(project.company_id || '') === companySelect.value;
+            const matchesStatus = statusSelect.value === 'all' || project.status === statusSelect.value;
+            const matchesDate = !dateInput.value || project.start_date === dateInput.value;
+
+            return matchesSearch && matchesCompany && matchesStatus && matchesDate;
         });
     }
 
     function getStatusClass(status) {
-        if (status === 'On Hold') return 'hold';
-        if (status === 'Completed') return 'completed';
+        if (status === 'on_hold') return 'hold';
+        if (status === 'completed') return 'completed';
+        if (status === 'cancelled') return 'hold';
         return 'active';
     }
 
@@ -51,25 +60,23 @@
 
         const startIndex = (currentPage - 1) * pageSize;
         const projectsForPage = filteredProjects.slice(startIndex, startIndex + pageSize);
-        const rows = document.getElementById('project-rows');
-        rows.innerHTML = '';
 
-        projectsForPage.forEach(function (project, index) {
-            const imageNumber = (projects.indexOf(project) % 4) + 1;
-            const row = document.createElement('tr');
-
-            row.innerHTML = `
-                <td><input type="checkbox" aria-label="Select ${project[0]}"></td>
-                <td>${startIndex + index + 1}</td>
-                <td><span class="project-name"><img class="project-thumb" src="/images/admin-construction.jpg" alt=""><span>${project[0]}<small>PRJ${String(projects.indexOf(project) + 1).padStart(3, '0')}</small></span></span></td>
-                <td>${project[1]}</td><td>${project[2]}</td><td>${project[3]}</td><td>${project[4]}</td>
-                <td><span class="project-status ${getStatusClass(project[5])}">${project[5]}</span></td>
-                <td><span class="progress-wrap"><span class="progress-bar ${getProgressClass(project[6])}"><span style="width:${project[6]}%"></span></span>${project[6]}%</span></td>
-                <td><span class="worker-total"><svg class="icon"><use href="#users"/></svg>${project[7]}</span></td>
-                <td><div class="company-actions"><button class="company-action" type="button" data-project="${projects.indexOf(project)}">View</button><button class="company-action" type="button" data-project="${projects.indexOf(project)}">Edit</button></div></td>
-            `;
-            rows.appendChild(row);
-        });
+        rows.innerHTML = projectsForPage.map(function (project, index) {
+            return '<tr>'
+                + '<td><input type="checkbox" aria-label="Select ' + escapeText(project.name) + '"></td>'
+                + '<td>' + (startIndex + index + 1) + '</td>'
+                + '<td><span class="project-name"><img class="project-thumb" src="/images/admin-construction.jpg" alt=""><span>' + escapeText(project.name) + '<small>' + escapeText(project.project_code) + '</small></span></span></td>'
+                + '<td>' + escapeText(project.project_type_label) + '</td>'
+                + '<td>' + escapeText(project.company) + '</td>'
+                + '<td>' + escapeText(project.location) + '</td>'
+                + '<td>' + escapeText(project.start_date_label) + '</td>'
+                + '<td>' + escapeText(project.end_date_label) + '</td>'
+                + '<td><span class="project-status ' + getStatusClass(project.status) + '">' + escapeText(project.status_label) + '</span></td>'
+                + '<td><span class="progress-wrap"><span class="progress-bar ' + getProgressClass(Number(project.progress || 0)) + '"><span style="width:' + Number(project.progress || 0) + '%"></span></span>' + Number(project.progress || 0) + '%</span><small class="progress-meta">' + Number(project.approved || 0) + '/' + Number(project.target || 0) + ' approved</small></td>'
+                + '<td><span class="worker-total"><svg class="icon"><use href="#users"/></svg>' + Number(project.workers_count || 0) + '</span></td>'
+                + '<td><div class="company-actions"><button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="view">View</button><button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="edit">Edit</button></div></td>'
+                + '</tr>';
+        }).join('');
 
         document.getElementById('projects-empty').hidden = filteredProjects.length > 0;
         updateCount(filteredProjects.length, startIndex, pageSize);
@@ -83,16 +90,11 @@
 
     function renderPagination(totalPages) {
         const pagination = document.getElementById('project-pagination');
-        pagination.innerHTML = '';
-
+        let html = '';
         for (let page = 1; page <= totalPages; page++) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.textContent = page;
-            button.dataset.page = page;
-            if (page === currentPage) button.classList.add('active');
-            pagination.appendChild(button);
+            html += '<button type="button" data-page="' + page + '" class="' + (page === currentPage ? 'active' : '') + '">' + page + '</button>';
         }
+        pagination.innerHTML = html;
     }
 
     function resetFilters() {
@@ -111,6 +113,19 @@
         });
     });
 
+    document.getElementById('dashboard-search')?.addEventListener('input', function (event) {
+        searchInput.value = event.target.value;
+        currentPage = 1;
+        renderProjects();
+    });
+
+    searchInput.addEventListener('input', function () {
+        const topbarSearch = document.getElementById('dashboard-search');
+        if (topbarSearch) {
+            topbarSearch.value = searchInput.value;
+        }
+    });
+
     document.getElementById('reset-projects').addEventListener('click', resetFilters);
     document.getElementById('project-pagination').addEventListener('click', function (event) {
         const button = event.target.closest('[data-page]');
@@ -125,13 +140,38 @@
         });
     });
 
-    document.getElementById('project-rows').addEventListener('click', function (event) {
-        const button = event.target.closest('[data-project]');
+    rows.addEventListener('click', function (event) {
+        const button = event.target.closest('[data-project-id]');
         if (!button) return;
-        const project = projects[Number(button.dataset.project)];
-        document.getElementById('project-dialog-title').textContent = project[0];
-        document.getElementById('project-dialog-text').textContent = `${project[1]} · ${project[2]} · ${project[5]} · ${project[6]}% complete`;
+
+        const project = projects.find(function (item) {
+            return Number(item.id) === Number(button.dataset.projectId);
+        });
+        if (!project) return;
+
+        document.getElementById('project-dialog-title').textContent = project.name;
+        document.getElementById('project-dialog-text').textContent = [
+            'Code: ' + project.project_code,
+            'Type: ' + project.project_type_label,
+            'Company: ' + project.company,
+            'Location: ' + project.location,
+            'Activities: ' + Number(project.activities_count || 0),
+            'Assignments: ' + Number(project.assignments_count || 0),
+            'Workers: ' + Number(project.workers_count || 0),
+            'Target: ' + Number(project.target || 0),
+            'Approved: ' + Number(project.approved || 0),
+            'Remaining: ' + Number(project.remaining || 0),
+            'Progress: ' + Number(project.progress || 0) + '%',
+            'Status: ' + project.status_label,
+        ].join(' | ');
         document.getElementById('project-dialog').showModal();
+
+        if (button.dataset.projectAction === 'edit') {
+            const toast = document.getElementById('project-toast');
+            toast.textContent = 'Edit action is not enabled yet. Showing current project details.';
+            toast.hidden = false;
+            setTimeout(function () { toast.hidden = true; }, 2500);
+        }
     });
 
     document.getElementById('close-project-dialog').addEventListener('click', function () {

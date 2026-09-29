@@ -1,18 +1,5 @@
 (() => {
-    // Sample users. Backend database data can replace this array later.
-    const users = [
-        ['Ramesh Kumar', 'ramesh@mail.com', '9876543210', 'worker', 'ABC Company', 'Active', '28 Sep 2026'],
-        ['Suresh Patel', 'suresh@mail.com', '9876543211', 'worker', 'XYZ Pvt Ltd', 'Active', '28 Sep 2026'],
-        ['Amit Singh', 'amit@mail.com', '9876543212', 'worker', 'Sunrise Corp', 'Inactive', '27 Sep 2026'],
-        ['Priya Sharma', 'priya@mail.com', '9876543213', 'company', 'GreenTech', 'Active', '27 Sep 2026'],
-        ['Neha Verma', 'neha@mail.com', '9876543214', 'worker', 'ABC Company', 'Active', '26 Sep 2026'],
-        ['Vikram Singh', 'vikram@mail.com', '9876543215', 'worker', 'Market Survey', 'Active', '25 Sep 2026'],
-        ['Anil Yadav', 'anil@mail.com', '9876543216', 'admin', '-', 'Active', '25 Sep 2026'],
-        ['Kavita Joshi', 'kavita@mail.com', '9876543217', 'worker', 'River Awareness', 'Active', '24 Sep 2026'],
-        ['Manish Gupta', 'manish@mail.com', '9876543218', 'company', 'BuildWell', 'Inactive', '23 Sep 2026'],
-        ['Pooja Mehta', 'pooja@mail.com', '9876543219', 'worker', 'Green City Initiative', 'Active', '22 Sep 2026'],
-    ];
-
+    const users = Array.isArray(window.usersData) ? window.usersData : [];
     let currentPage = 1;
 
     const searchInput = document.getElementById('user-search');
@@ -20,23 +7,47 @@
     const companySelect = document.getElementById('user-company');
     const statusSelect = document.getElementById('user-status');
     const pageSizeSelect = document.getElementById('user-page-size');
+    const rows = document.getElementById('user-rows');
 
-    // Return users that match all selected filters.
+    function escapeText(value) {
+        const element = document.createElement('span');
+        element.textContent = value === null || value === undefined || value === '' ? '-' : String(value);
+        return element.innerHTML;
+    }
+
+    function initials(name) {
+        return String(name || 'NA')
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map(function (part) { return part[0] || ''; })
+            .join('')
+            .toUpperCase() || 'NA';
+    }
+
     function getFilteredUsers() {
-        const searchText = searchInput.value.toLowerCase();
+        const searchText = searchInput.value.toLowerCase().trim();
 
         return users.filter(function (user) {
-            const userText = user.join(' ').toLowerCase();
+            const userText = [
+                user.name,
+                user.code,
+                user.email,
+                user.mobile,
+                user.role_label,
+                user.company,
+                user.status_label,
+            ].join(' ').toLowerCase();
+
             const matchesSearch = userText.includes(searchText);
-            const matchesRole = roleSelect.value === 'all' || user[3] === roleSelect.value;
-            const matchesCompany = companySelect.value === 'all' || user[4] === companySelect.value;
-            const matchesStatus = statusSelect.value === 'all' || user[5] === statusSelect.value;
+            const matchesRole = roleSelect.value === 'all' || user.role === roleSelect.value;
+            const matchesCompany = companySelect.value === 'all' || String(user.company_id || '') === companySelect.value;
+            const matchesStatus = statusSelect.value === 'all' || user.status === statusSelect.value;
 
             return matchesSearch && matchesRole && matchesCompany && matchesStatus;
         });
     }
 
-    // Create the user table based on filters and selected page.
     function renderUsers() {
         const filteredUsers = getFilteredUsers();
         const pageSize = Number(pageSizeSelect.value);
@@ -45,29 +56,23 @@
 
         const startIndex = (currentPage - 1) * pageSize;
         const usersForThisPage = filteredUsers.slice(startIndex, startIndex + pageSize);
-        const rows = document.getElementById('user-rows');
 
-        rows.innerHTML = '';
+        rows.innerHTML = usersForThisPage.map(function (user, index) {
+            const inactiveClass = user.status === 'inactive' ? ' inactive' : '';
 
-        usersForThisPage.forEach(function (user, index) {
-            const originalIndex = users.indexOf(user);
-            const initials = user[0].split(' ').map(function (part) { return part[0]; }).join('');
-            const row = document.createElement('tr');
-
-            row.innerHTML = `
-                <td><input type="checkbox" aria-label="Select ${user[0]}"></td>
-                <td>${startIndex + index + 1}</td>
-                <td><span class="user-name"><span class="avatar user-avatar">${initials}</span><span>${user[0]}<small>USR${String(originalIndex + 1).padStart(3, '0')}</small></span></span></td>
-                <td>${user[1]}</td><td>${user[2]}</td>
-                <td><span class="role-badge ${user[3]}">${user[3]}</span></td>
-                <td>${user[4]}</td>
-                <td><span class="company-status ${user[5] === 'Inactive' ? 'inactive' : ''}">${user[5]}</span></td>
-                <td>${user[6]}</td>
-                <td><div class="company-actions"><button class="company-action user-action" data-user-index="${originalIndex}" type="button">View</button><button class="company-action edit user-action" data-user-index="${originalIndex}" type="button">Edit</button></div></td>
-            `;
-
-            rows.appendChild(row);
-        });
+            return '<tr>'
+                + '<td><input type="checkbox" aria-label="Select ' + escapeText(user.name) + '"></td>'
+                + '<td>' + (startIndex + index + 1) + '</td>'
+                + '<td><span class="user-name"><span class="avatar user-avatar">' + escapeText(initials(user.name)) + '</span><span>' + escapeText(user.name) + '<small>' + escapeText(user.code) + '</small></span></span></td>'
+                + '<td>' + escapeText(user.email) + '</td>'
+                + '<td>' + escapeText(user.mobile) + '</td>'
+                + '<td><span class="role-badge ' + escapeText(user.role) + '">' + escapeText(user.role_label) + '</span></td>'
+                + '<td>' + escapeText(user.company) + '</td>'
+                + '<td><span class="company-status' + inactiveClass + '">' + escapeText(user.status_label) + '</span></td>'
+                + '<td>' + escapeText(user.created_date) + '</td>'
+                + '<td><div class="company-actions"><button class="company-action user-action" data-user-id="' + user.id + '" data-user-action="view" type="button">View</button><button class="company-action edit user-action" data-user-id="' + user.id + '" data-user-action="edit" type="button">Edit</button></div></td>'
+                + '</tr>';
+        }).join('');
 
         document.getElementById('users-empty').hidden = filteredUsers.length > 0;
         updateUserCount(filteredUsers.length, startIndex, pageSize);
@@ -81,20 +86,13 @@
 
     function renderPagination(totalPages) {
         const pagination = document.getElementById('user-pagination');
-        pagination.innerHTML = '';
+        let html = '';
 
         for (let page = 1; page <= totalPages; page++) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.textContent = page;
-            button.dataset.page = page;
-
-            if (page === currentPage) {
-                button.classList.add('active');
-            }
-
-            pagination.appendChild(button);
+            html += '<button type="button" data-page="' + page + '" class="' + (page === currentPage ? 'active' : '') + '">' + page + '</button>';
         }
+
+        pagination.innerHTML = html;
     }
 
     function resetFilters() {
@@ -113,11 +111,23 @@
         });
     });
 
+    document.getElementById('dashboard-search')?.addEventListener('input', function (event) {
+        searchInput.value = event.target.value;
+        currentPage = 1;
+        renderUsers();
+    });
+
+    searchInput.addEventListener('input', function () {
+        const topbarSearch = document.getElementById('dashboard-search');
+        if (topbarSearch) {
+            topbarSearch.value = searchInput.value;
+        }
+    });
+
     document.getElementById('reset-users').addEventListener('click', resetFilters);
 
     document.getElementById('user-pagination').addEventListener('click', function (event) {
         const button = event.target.closest('[data-page]');
-
         if (button) {
             currentPage = Number(button.dataset.page);
             renderUsers();
@@ -130,32 +140,42 @@
         });
     });
 
-    // Show a simple preview for View and Edit buttons.
-    document.getElementById('user-rows').addEventListener('click', function (event) {
-        const button = event.target.closest('[data-user-index]');
-
+    rows.addEventListener('click', function (event) {
+        const button = event.target.closest('[data-user-id]');
         if (!button) {
             return;
         }
 
-        const user = users[Number(button.dataset.userIndex)];
-        document.getElementById('user-dialog-title').textContent = user[0];
-        document.getElementById('user-dialog-text').textContent = `${user[1]} · ${user[2]} · ${user[3]} · ${user[5]}`;
+        const user = users.find(function (item) {
+            return Number(item.id) === Number(button.dataset.userId);
+        });
+        if (!user) {
+            return;
+        }
+
+        document.getElementById('user-dialog-title').textContent = user.name;
+        document.getElementById('user-dialog-text').textContent = [
+            'Code: ' + user.code,
+            'Email: ' + (user.email || '-'),
+            'Mobile: ' + (user.mobile || '-'),
+            'Role: ' + user.role_label,
+            'Company: ' + (user.company || '-'),
+            'Status: ' + user.status_label,
+            user.role === 'worker' ? 'Assignments: ' + Number(user.assignments_count || 0) : '',
+            user.role === 'worker' ? 'Submissions: ' + Number(user.submissions_count || 0) : '',
+        ].filter(Boolean).join(' | ');
         document.getElementById('user-dialog').showModal();
+
+        if (button.dataset.userAction === 'edit') {
+            const toast = document.getElementById('user-toast');
+            toast.textContent = 'Edit action is not enabled yet. Showing current user details.';
+            toast.hidden = false;
+            setTimeout(function () { toast.hidden = true; }, 2500);
+        }
     });
 
     document.getElementById('close-user-dialog').addEventListener('click', function () {
         document.getElementById('user-dialog').close();
-    });
-
-    document.getElementById('add-user').addEventListener('click', function () {
-        const toast = document.getElementById('user-toast');
-        toast.textContent = 'Add User page will be connected next.';
-        toast.hidden = false;
-
-        setTimeout(function () {
-            toast.hidden = true;
-        }, 2500);
     });
 
     renderUsers();

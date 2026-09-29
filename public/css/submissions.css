@@ -21,7 +21,7 @@
 .submission-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .submission-item { overflow: hidden; padding-bottom: 10px; border: 1px solid #e6edf5; border-radius: 8px; background: #fff; text-align: left; }
 .submission-item.selected { outline: 2px solid #1c70ed; }
-.submission-photo { position: relative; height: 88px; background: linear-gradient(135deg, #162d41aa, #2e9a79aa), url('../images/admin-construction.jpg') center / cover; }
+.submission-photo { position: relative; height: 88px; background-position: center; background-size: cover; }
 .submission-photo::after { content: attr(data-count); position: absolute; bottom: 6px; left: 6px; padding: 4px 6px; border-radius: 4px; background: #0f213ec9; color: white; font-size: 9px; }
 .submission-item h3 { margin: 10px 9px 5px; font-size: 11px; }
 .submission-item p { margin: 0 9px 6px; color: #63758c; font-size: 10px; }
@@ -30,9 +30,12 @@
 .submission-status.approved { color: #078553; background: #ddf7ea; }.submission-status.pending { color: #d96816; background: #ffeadb; }.submission-status.rejected { color: #db3040; background: #ffe4e8; }
 .submission-detail { overflow: hidden; border-radius: 10px; background: #ffffffdc; }
 .detail-heading { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #edf1f6; }.detail-heading h2 { margin: 0; font-size: 15px; }.detail-heading button { border: 0; background: transparent; font-size: 21px; }
-.detail-photo { height: 235px; margin: 14px; border-radius: 7px; background: linear-gradient(135deg, #1c3a4db0, #22927580), url('../images/admin-construction.jpg') center / cover; }
+.detail-photo { height: 235px; margin: 14px; border-radius: 7px; background-position: center; background-size: cover; }
 .detail-section { padding: 0 14px 12px; }.detail-section h3 { margin: 0 0 7px; font-size: 11px; }.detail-table { width: 100%; border-collapse: collapse; font-size: 10px; }.detail-table td { padding: 6px; border: 1px solid #edf1f6; }.detail-table td:first-child { color: #6b7c93; }
 .comment-box { position: relative; width: 100%; height: 55px; padding: 10px; border: 1px solid #d4dfeb; border-radius: 6px; resize: none; font: inherit; font-size: 10px; }.comment-count { float: right; margin-top: -16px; margin-right: 7px; color: #667891; font-size: 9px; }
 .detail-actions { display: flex; gap: 8px; padding: 10px 14px 16px; }.detail-actions button { flex: 1; padding: 10px 6px; border-radius: 6px; font-size: 10px; }.reject-button { border: 1px solid #ef5260; color: #dc3040; background: #fff; }.approve-button { border: 0; color: #fff; background: #1c70ed; }.request-button { border: 0; color: #405573; background: #eaf1fb; }
+.detail-note { margin: 0; color: #4f6078; font-size: 11px; line-height: 1.5; }
+.submission-stat > span .icon { width: 25px; height: 25px; }
+.empty-state { padding: 22px; text-align: center; color: #64748a; }
 @media (max-width: 1400px) { .submissions-layout { grid-template-columns: 1fr; }.submission-detail { max-width: none; }.submission-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 800px) { .submission-filters { grid-template-columns: 1fr 1fr; }.submission-search { grid-column: 1 / -1; }.submission-grid { grid-template-columns: repeat(2, 1fr); }.submission-stats { grid-template-columns: repeat(2, 1fr); } }

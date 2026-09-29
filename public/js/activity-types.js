@@ -1,81 +1,101 @@
 (() => {
-    const activities = [
-        ['Installation', 'Install promotional materials at assigned locations', 'Single Submission', 'Active', 42, '🔧'],
-        ['Survey', 'Conduct field survey and collect information', 'Single Submission', 'Active', 28, '📄'],
-        ['Cleaning', 'Clean assigned area', 'Start - End', 'Active', 26, '🧹'],
-        ['Visit', 'Visit location and capture photos', 'Single Submission', 'Active', 20, '📍'],
-        ['Campaign', 'Campaign and awareness activity', 'Continuous Tracking', 'Active', 18, '📣'],
-        ['Shop Visit', 'Visit retail shops', 'Single Submission', 'Active', 16, '🏪'],
-        ['Road Cleaning', 'Road and public area cleaning', 'Start - End', 'Active', 14, '🧹'],
-        ['Other', 'Other type of activity', 'Single Submission', 'Inactive', 6, '•'],
-    ];
-
-    let selectedIcon = '🔧';
     const search = document.getElementById('activity-search');
     const status = document.getElementById('activity-status');
-
-    function modeClass(mode) {
-        if (mode === 'Start - End') return 'start';
-        if (mode === 'Continuous Tracking') return 'continuous';
-        return '';
-    }
+    const rows = Array.from(document.querySelectorAll('#activity-rows tr'));
+    const empty = document.getElementById('activities-empty');
+    const count = document.getElementById('activity-count');
+    const formPanel = document.getElementById('activity-form-panel');
+    const openForm = document.getElementById('open-activity-form');
+    const closeForm = document.getElementById('close-activity-form');
+    const cancelForm = document.getElementById('cancel-activity');
+    const description = document.getElementById('activity-description');
+    const descriptionCount = document.getElementById('activity-description-count');
+    const trackingRequired = document.getElementById('tracking-required');
 
     function renderActivities() {
-        const query = search.value.toLowerCase();
-        const list = activities.filter(function (activity) {
-            return activity.join(' ').toLowerCase().includes(query) && (status.value === 'all' || activity[3] === status.value);
+        const query = (search?.value || '').toLowerCase().trim();
+        const selectedStatus = status?.value || 'all';
+        let visibleRows = 0;
+
+        rows.forEach(function (row, index) {
+            const matchesSearch = !query || row.dataset.search.includes(query);
+            const matchesStatus = selectedStatus === 'all' || row.dataset.status === selectedStatus;
+            const isVisible = matchesSearch && matchesStatus;
+
+            row.hidden = !isVisible;
+
+            if (isVisible) {
+                visibleRows++;
+                row.querySelector('td').textContent = visibleRows;
+            } else {
+                row.querySelector('td').textContent = index + 1;
+            }
         });
 
-        const rows = document.getElementById('activity-rows');
-        rows.innerHTML = '';
+        if (empty) {
+            empty.hidden = visibleRows > 0;
+        }
 
-        list.forEach(function (activity, index) {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${index + 1}</td><td><span class="activity-name"><span class="activity-icon">${activity[5]}</span>${activity[0]}</span></td><td>${activity[1]}</td><td><span class="mode-badge ${modeClass(activity[2])}">${activity[2]}</span></td><td><span class="activity-status ${activity[3] === 'Inactive' ? 'inactive' : ''}">${activity[3]}</span></td><td>${activity[4]}</td><td><div class="activity-actions"><button class="activity-action" type="button" aria-label="Edit ${activity[0]}">✎</button><button class="activity-action delete" type="button" aria-label="Delete ${activity[0]}">⌫</button></div></td>`;
-            rows.appendChild(row);
-        });
-
-        document.getElementById('activities-empty').hidden = list.length > 0;
+        if (count) {
+            count.textContent = visibleRows + ' of ' + rows.length + ' activity types';
+        }
     }
 
-    search.addEventListener('input', renderActivities);
-    status.addEventListener('change', renderActivities);
-    document.getElementById('activity-description').addEventListener('input', function (event) {
-        document.getElementById('activity-description-count').textContent = `${event.target.value.length}/500`;
-    });
+    function updateDescriptionCount() {
+        if (!description || !descriptionCount) {
+            return;
+        }
 
-    document.querySelectorAll('.icon-choice').forEach(function (button) {
-        button.addEventListener('click', function () {
-            selectedIcon = button.dataset.icon;
-            document.querySelectorAll('.icon-choice').forEach(function (item) { item.classList.remove('selected'); });
-            button.classList.add('selected');
-        });
-    });
-
-    function hideActivityForm() {
-        document.getElementById('activity-form-panel').hidden = true;
+        descriptionCount.textContent = description.value.length + '/500';
     }
 
-    document.getElementById('close-activity-form').addEventListener('click', hideActivityForm);
-    document.getElementById('cancel-activity').addEventListener('click', hideActivityForm);
+    function showForm() {
+        if (formPanel) {
+            formPanel.hidden = false;
+            document.getElementById('activity-name')?.focus();
+        }
+    }
 
-    document.getElementById('activity-form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        if (!event.currentTarget.reportValidity()) return;
+    function hideForm() {
+        if (formPanel) {
+            formPanel.hidden = true;
+        }
+    }
 
-        const selectedMode = document.querySelector('input[name="mode"]:checked').value;
-        const selectedStatus = document.getElementById('activity-active').checked ? 'Active' : 'Inactive';
-        activities.unshift([document.getElementById('activity-name').value, document.getElementById('activity-description').value, selectedMode, selectedStatus, 0, selectedIcon]);
-        event.currentTarget.reset();
-        document.getElementById('activity-active').checked = true;
-        hideActivityForm();
-        renderActivities();
+    function syncTrackingForMode() {
+        const mode = document.querySelector('input[name="activity_mode"]:checked')?.value;
 
-        const toast = document.getElementById('activity-toast');
-        toast.textContent = 'Activity type added in design preview.';
-        toast.hidden = false;
-        setTimeout(function () { toast.hidden = true; }, 3000);
+        if (!trackingRequired) {
+            return;
+        }
+
+        if (mode === 'continuous_tracking') {
+            trackingRequired.checked = true;
+            trackingRequired.disabled = true;
+            return;
+        }
+
+        trackingRequired.disabled = false;
+    }
+
+    search?.addEventListener('input', renderActivities);
+    status?.addEventListener('change', renderActivities);
+    description?.addEventListener('input', updateDescriptionCount);
+    openForm?.addEventListener('click', showForm);
+    closeForm?.addEventListener('click', hideForm);
+    cancelForm?.addEventListener('click', hideForm);
+
+    document.querySelectorAll('input[name="activity_mode"]').forEach(function (radio) {
+        radio.addEventListener('change', syncTrackingForMode);
     });
 
+    document.getElementById('activity-form')?.addEventListener('submit', function () {
+        if (trackingRequired) {
+            trackingRequired.disabled = false;
+        }
+    });
+
+    updateDescriptionCount();
+    syncTrackingForMode();
     renderActivities();
 })();

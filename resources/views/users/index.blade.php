@@ -34,19 +34,19 @@
     <div class="user-stats">
         <article class="user-stat blue">
             <span class="user-stat-icon"><svg class="icon"><use href="#users"/></svg></span>
-            <div><h2>Total Users</h2><strong>86</strong><p>+ 12 this month</p></div>
+            <div><h2>Total Users</h2><strong>{{ number_format($summary['total']) }}</strong><p>+ {{ number_format($summary['total_month']) }} this month</p></div>
         </article>
         <article class="user-stat green">
             <span class="user-stat-icon"><svg class="icon"><use href="#users"/></svg></span>
-            <div><h2>Admins</h2><strong>6</strong><p>+ 1 this month</p></div>
+            <div><h2>Admins</h2><strong>{{ number_format($summary['admins']) }}</strong><p>+ {{ number_format($summary['admins_month']) }} this month</p></div>
         </article>
         <article class="user-stat orange">
             <span class="user-stat-icon"><svg class="icon"><use href="#users"/></svg></span>
-            <div><h2>Company Users</h2><strong>24</strong><p>+ 5 this month</p></div>
+            <div><h2>Company Users</h2><strong>{{ number_format($summary['company_users']) }}</strong><p>+ {{ number_format($summary['company_users_month']) }} this month</p></div>
         </article>
         <article class="user-stat purple">
             <span class="user-stat-icon"><svg class="icon"><use href="#users"/></svg></span>
-            <div><h2>Workers</h2><strong>56</strong><p>+ 6 this month</p></div>
+            <div><h2>Workers</h2><strong>{{ number_format($summary['workers']) }}</strong><p>{{ number_format($summary['active_workers']) }} active</p></div>
         </article>
     </div>
 
@@ -59,6 +59,7 @@
 
         <select id="user-role" aria-label="Filter users by role">
             <option value="all">All Roles</option>
+            <option value="super_admin">Super Admin</option>
             <option value="admin">Admin</option>
             <option value="company">Company</option>
             <option value="worker">Worker</option>
@@ -66,15 +67,15 @@
 
         <select id="user-company" aria-label="Filter users by company">
             <option value="all">All Companies</option>
-            <option>ABC Company</option>
-            <option>XYZ Pvt Ltd</option>
-            <option>GreenTech</option>
+            @foreach ($companies as $company)
+                <option value="{{ $company['id'] }}">{{ $company['name'] }}</option>
+            @endforeach
         </select>
 
         <select id="user-status" aria-label="Filter users by status">
             <option value="all">All Status</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
         </select>
 
         <button class="reset-button" id="reset-users" type="button">Reset</button>
@@ -118,5 +119,8 @@
 @endsection
 
 @push('scripts')
+    <script>
+        window.usersData = @json($users);
+    </script>
     <script src="{{ asset('js/users.js') }}"></script>
 @endpush

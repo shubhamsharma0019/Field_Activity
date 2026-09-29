@@ -7,51 +7,52 @@
     <style>
         /* Page layout */
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 22px; font-family: Arial, sans-serif; color: #0b1224; background: #eaf2fd; }
+        html, body { min-height: 100%; }
+        body { min-height: 100vh; margin: 0; padding: 18px; overflow: hidden; font-family: Arial, sans-serif; color: #0b1224; background: #eaf2fd; }
         button, input { font: inherit; }
         button { cursor: pointer; }
-        .login-page { display: flex; max-width: 1100px; min-height: 700px; margin: auto; border-radius: 16px; overflow: hidden; background: #f3f7fe; box-shadow: 0 9px 30px #254e7810; }
+        .login-page { display: flex; width: min(100%, 1376px); height: calc(100vh - 36px); min-height: 620px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: #f3f7fe; box-shadow: 0 9px 30px #254e7810; }
         .icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
         .icon-library { position: absolute; width: 0; height: 0; overflow: hidden; }
         /* Left panel */
-        .brand-panel { position: relative; width: 43%; padding: 36px 41px; color: white; background: linear-gradient(160deg, #0b1b30f5 0%, #214c78de 42%, #214c7830 80%), url('{{ asset('images/admin-construction.jpg') }}') center bottom / cover; }
+        .brand-panel { position: relative; width: 43%; min-height: 100%; padding: 28px 41px; color: white; background: linear-gradient(160deg, #0b1b30f5 0%, #214c78de 42%, #214c7830 80%), url('{{ asset('images/admin-construction.jpg') }}') center bottom / cover; }
         .version { position: absolute; top: 20px; right: 28px; font-size: 12px; }
         .brand-heading { text-align: center; }
-        .brand-logo { width: 70px; height: 72px; margin-bottom: 9px; }
-        .brand-heading h1 { margin: 0; font-size: 34px; line-height: 1.2; }
-        .brand-heading h2 { margin: 4px 0 18px; font-size: 20px; font-weight: 400; }
+        .brand-logo { width: 64px; height: 66px; margin-bottom: 8px; }
+        .brand-heading h1 { margin: 0; font-size: 32px; line-height: 1.15; }
+        .brand-heading h2 { margin: 4px 0 16px; font-size: 19px; font-weight: 400; }
         .brand-heading p { font-size: 15px; line-height: 1.4; }
         .features { max-width: 292px; margin: 18px auto; }
-        .feature { display: flex; align-items: center; gap: 17px; margin-bottom: 14px; }
+        .feature { display: flex; align-items: center; gap: 17px; margin-bottom: 12px; }
         .feature-icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex-shrink: 0; border: 2px solid #8cbcd37a; border-radius: 50%; background: #638f9e20; }
         .feature h3 { font-size: 13px; margin: 0 0 4px; }
         .feature p { margin: 0; font-size: 12px; line-height: 1.4; }
-        .map-art { position: absolute; width: 65%; bottom: 101px; right: 15px; opacity: .85; }
+        .map-art { position: absolute; width: 65%; bottom: 62px; right: 15px; opacity: .85; }
         /* Login card and inputs */
-        .form-panel { width: 57%; padding: 20px 38px 22px; background: linear-gradient(135deg, #eaf3ff, #f9fbff 50%, #eaf3ff); }
-        .secure-access { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin: 0 15px 20px 0; color: #52637c; font-size: 12px; }
+        .form-panel { display: flex; flex-direction: column; justify-content: center; width: 57%; min-height: 100%; padding: 18px 46px; background: linear-gradient(135deg, #eaf3ff, #f9fbff 50%, #eaf3ff); }
+        .secure-access { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin: 0 52px 20px 0; color: #52637c; font-size: 12px; }
         .secure-access .icon { width: 14px; height: 14px; }
-        .login-card { padding: 34px 38px 16px; border: 2px solid white; border-radius: 15px; background: #ffffffed; box-shadow: 0 9px 26px #5276ad0b; }
-        .welcome { color: #405cf1; font-size: 17px; font-weight: bold; margin: 0 0 12px; }
-        .login-card h2 { margin: 0 0 9px; font-size: clamp(22px, 2.2vw, 30px); line-height: 1.2; letter-spacing: -.6px; }
-        .description { color: #5d6c85; font-size: 14px; line-height: 1.45; margin: 0 0 27px; }
-        .field-label { display: block; font-size: 14px; font-weight: bold; margin: 0 0 8px; }
-        .input-box { display: flex; align-items: center; gap: 14px; height: 45px; padding: 0 15px; border: 1px solid #d0d6e1; border-radius: 7px; background: #f7f9ff; color: #506078; margin-bottom: 20px; }
+        .login-card { width: min(100%, 690px); margin: 0 auto; padding: 30px 48px 16px; border: 2px solid white; border-radius: 15px; background: #ffffffed; box-shadow: 0 9px 26px #5276ad0b; }
+        .welcome { color: #405cf1; font-size: 16px; font-weight: bold; margin: 0 0 12px; }
+        .login-card h2 { margin: 0 0 10px; font-size: clamp(24px, 2vw, 30px); line-height: 1.16; letter-spacing: 0; }
+        .description { color: #5d6c85; font-size: 14px; line-height: 1.45; margin: 0 0 24px; }
+        .field-label { display: block; font-size: 14px; font-weight: bold; margin: 0 0 7px; }
+        .input-box { display: flex; align-items: center; gap: 14px; height: 44px; padding: 0 15px; border: 1px solid #d0d6e1; border-radius: 7px; background: #f7f9ff; color: #506078; margin-bottom: 18px; }
         .input-box:focus-within { border-color: #4163ff; outline: 3px solid #4163ff15; }
         .input-box input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #152038; font-size: 13px; }
         .input-box input::placeholder { color: #7c89a0; }
         .password-toggle { display: flex; border: 0; padding: 3px; color: #506078; background: transparent; }
-        .form-options { display: flex; justify-content: space-between; align-items: center; gap: 9px; margin: -4px 0 22px; font-size: 13px; }
+        .form-options { display: flex; justify-content: space-between; align-items: center; gap: 9px; margin: -2px 0 20px; font-size: 13px; }
         .remember { display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .remember input { width: 18px; height: 18px; margin: 0; accent-color: #4261fa; }
         .forgot { border: 0; padding: 0; background: transparent; color: #4059ed; font-weight: bold; }
-        .login-button { width: 100%; height: 49px; display: flex; align-items: center; justify-content: center; gap: 16px; border: 0; border-radius: 8px; color: white; background: linear-gradient(110deg, #386bf9, #455ffc); font-size: 16px; font-weight: bold; }
+        .login-button { width: 100%; height: 48px; display: flex; align-items: center; justify-content: center; gap: 16px; border: 0; border-radius: 8px; color: white; background: linear-gradient(110deg, #386bf9, #455ffc); font-size: 16px; font-weight: bold; }
         .login-button:hover { background: #3152e2; }
         button:focus-visible, input:focus-visible { outline: 3px solid #8aa8ff; outline-offset: 3px; }
-        .divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 16px; color: #687991; font-size: 12px; }
+        .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; color: #687991; font-size: 12px; }
         .divider::before, .divider::after { content: ''; height: 1px; background: #e0e5ed; flex: 1; }
         .roles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .role { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 11px 4px; border: 1px solid #e7dff8; border-radius: 7px; background: #f8f5ff; text-align: center; }
+        .role { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px; border: 1px solid #e7dff8; border-radius: 7px; background: #f8f5ff; text-align: center; }
         .role .icon { color: #963eee; }
         .role strong { font-size: 12px; }
         .role span { font-size: 12px; color: #53617a; }
@@ -61,21 +62,25 @@
         .role.company .icon { color: #20ae69; }
         .role.worker { background: #fff9f3; border-color: #f5e5d7; }
         .role.worker .icon { color: #fa8614; }
-        .security-note { display: flex; align-items: center; gap: 8px; margin: 16px 0 0; padding: 11px 13px; border-radius: 7px; background: #eaf2ff; color: #245bc6; font-size: 12px; line-height: 1.4; }
+        .security-note { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 10px 13px; border-radius: 7px; background: #eaf2ff; color: #245bc6; font-size: 12px; line-height: 1.4; }
         .security-note .icon { width: 15px; height: 15px; }
         .form-message { margin: 12px 0 0; color: #53617a; font-size: 12px; line-height: 1.5; }
+        .form-message.error { color: #d93025; }
         .form-message:empty { display: none; }
         /* Mobile and tablet layout */
         @media (max-width: 1200px) {
-            body { padding: 15px; }
+            body { padding: 14px; }
+            .login-page { height: calc(100vh - 28px); }
             .brand-panel { padding: 38px 19px; }
             .brand-heading h1 { font-size: 28px; }
-            .form-panel { padding: 20px 19px; }
-            .login-card { padding: 26px 19px 16px; }
+            .form-panel { padding: 16px 24px; }
+            .secure-access { margin-right: 20px; }
+            .login-card { padding: 26px 32px 16px; }
             .roles { gap: 6px; }
         }
         @media (max-width: 850px) {
-            .login-page { flex-direction: column; min-height: auto; }
+            body { overflow: auto; }
+            .login-page { flex-direction: column; height: auto; min-height: auto; }
             .brand-panel, .form-panel { width: 100%; }
             .brand-panel { padding: 26px 19px; }
             .brand-logo { width: 49px; height: 49px; }
@@ -157,16 +162,17 @@
                 <p class="welcome">Welcome Back 👋</p>
                 <h2 id="login-title">Sign in to your Admin Account</h2>
                 <p class="description">Access the Field Activity Management System to manage companies, projects, workers and activities.</p>
-                <form id="login-form">
+                <form id="login-form" method="POST" action="{{ route('admin.login.submit') }}">
+                    @csrf
                     <label class="field-label" for="email">Email Address</label>
                     <div class="input-box">
                         <svg class="icon" aria-hidden="true"><use href="#mail"/></svg>
-                        <input type="email" id="email" name="email" placeholder="Enter your email address" autocomplete="username" required>
+                        <input type="email" id="email" name="email" value="{{ old('email', $defaultEmail ?? 'admin@gmail.com') }}" placeholder="Enter your email address" autocomplete="username" required>
                     </div>
                     <label class="field-label" for="password">Password</label>
                     <div class="input-box">
                         <svg class="icon" aria-hidden="true"><use href="#lock"/></svg>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                        <input type="password" id="password" name="password" value="{{ $defaultPassword ?? '12345678' }}" placeholder="Enter your password" autocomplete="current-password" required>
                         <button class="password-toggle" type="button" id="toggle-password" aria-label="Show password" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#eye"/></svg></button>
                     </div>
                     <div class="form-options">
@@ -174,7 +180,11 @@
                         <button class="forgot" type="button" id="forgot-password">Forgot Password?</button>
                     </div>
                     <button class="login-button" type="submit"><svg class="icon" aria-hidden="true"><use href="#arrow"/></svg>Login</button>
-                    <p class="form-message" id="form-message" role="status"></p>
+                    <p class="form-message @if ($errors->any()) error @endif" id="form-message" role="status">
+                        @if ($errors->any())
+                            {{ $errors->first() }}
+                        @endif
+                    </p>
                 </form>
                 <div class="divider">Or continue with</div>
                 <div class="roles" aria-label="System roles">
@@ -191,7 +201,6 @@
         // Show or hide the password.
         const password = document.getElementById('password');
         const togglePassword = document.getElementById('toggle-password');
-        const message = document.getElementById('form-message');
 
         togglePassword.addEventListener('click', function () {
             const showPassword = password.type === 'password';
@@ -200,13 +209,9 @@
             togglePassword.setAttribute('aria-pressed', showPassword ? 'true' : 'false');
         });
 
-        // Design preview only. Connect the login backend here later.
-        document.getElementById('login-form').addEventListener('submit', function (event) {
-            event.preventDefault();
-            message.textContent = 'This is a design preview. Login is not connected yet.';
-        });
-
         document.getElementById('forgot-password').addEventListener('click', function () {
+            const message = document.getElementById('form-message');
+            message.classList.remove('error');
             message.textContent = 'Please contact your administrator to reset your password.';
         });
     </script>

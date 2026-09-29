@@ -1,10 +1,122 @@
 @extends('layout.app')
+
 @section('title', 'Activity Sessions')
-@push('styles')<link rel="stylesheet" href="{{ asset('css/session-list.css') }}">@endpush
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/session-list.css') }}">
+@endpush
+
 @section('content')
-@php($sessions = [['SES0001','Ramesh Kumar','Canopy Installation','City Clean Drive','28 Sep 2026 09:15 AM','3h 25m','Active','active'],['SES0002','Priya Sharma','Shop Visit','Market Survey','28 Sep 2026 09:40 AM','2h 30m','Pending Review','pending'],['SES0003','Amit Singh','Road Cleaning','River Awareness','28 Sep 2026 08:20 AM','4h 15m','Completed','completed'],['SES0004','Neha Verma','Canopy Installation','Green City Initiative','27 Sep 2026 10:05 AM','5h 10m','Completed','completed'],['SES0005','Suresh Patel','Field Setup','Awareness Drive','27 Sep 2026 09:30 AM','1h 20m','Rejected','rejected'],['SES0006','Vikram Yadav','Market Survey','City Clean Drive','27 Sep 2026 11:00 AM','2h 10m','Completed','completed']])
-<nav class="breadcrumbs"><a href="{{ route('web.dashboard') }}"><svg class="icon"><use href="#home"/></svg>Dashboard</a><span>&rsaquo;</span><span>Activity Sessions</span></nav>
-<div class="page-heading session-heading"><div><h1>Activity Sessions</h1><p>Monitor start-end field activities, working duration and review status.</p></div><div class="session-links"><a href="{{ route('web.activity-sessions.live') }}">Live Worker Tracking</a><a href="{{ route('web.activity-sessions.map') }}">View Full Map</a></div></div>
-<div class="session-stats"><article class="session-stat blue"><span><svg class="icon"><use href="#clock"/></svg></span><div><h2>Total Sessions</h2><strong>24</strong><p>↑ 20%</p></div></article><article class="session-stat green"><span>▶</span><div><h2>Active Now</h2><strong>6</strong><p>↑ 50%</p></div></article><article class="session-stat orange"><span><svg class="icon"><use href="#clock"/></svg></span><div><h2>Pending Review</h2><strong>5</strong><p>↑ 25%</p></div></article><article class="session-stat purple"><span>✓</span><div><h2>Completed</h2><strong>11</strong><p>↑ 10%</p></div></article><article class="session-stat blue"><span>×</span><div><h2>Rejected</h2><strong>2</strong><p>↓ 0%</p></div></article></div>
-<div class="session-layout"><section class="sessions-main"><div class="session-filters"><input placeholder="Search by worker, assignment or session ID..."><select><option>All Companies</option></select><select><option>All Projects</option></select><select><option>All Status</option></select><input type="date"><button>Reset</button></div><h2 style="padding:0 14px;font-size:14px">Activity Sessions (24)</h2><table class="session-table"><tr><th>#</th><th>Session ID</th><th>Worker</th><th>Assignment</th><th>Project</th><th>Start Time</th><th>Duration</th><th>End Time</th><th>Status</th><th>Actions</th></tr>@foreach($sessions as $session)<tr><td>{{ $loop->iteration }}</td><td>{{ $session[0] }}</td><td><b>{{ $session[1] }}</b><small>USR00{{ $loop->iteration }}</small></td><td>{{ $session[2] }}</td><td>{{ $session[3] }}</td><td>{{ $session[4] }}</td><td>{{ $session[5] }}</td><td>-</td><td><span class="session-status {{ $session[7] }}">{{ $session[6] }}</span></td><td><button class="session-view" type="button">◉</button></td></tr>@endforeach</table></section><aside class="session-detail"><div class="detail-head"><h2>Session Details</h2><span>×</span></div><div class="detail-profile-session"><span>RK</span><div><strong>Ramesh Kumar</strong><small>USR001<br>9876543210<br>Karol Bagh, New Delhi</small></div></div><table class="session-info"><tr><td>Assignment</td><td>Canopy Installation</td></tr><tr><td>Project</td><td>City Clean Drive</td></tr><tr><td>Company</td><td>ABC Company</td></tr><tr><td>Activity Mode</td><td>Start - End</td></tr><tr><td>Current Duration</td><td>3h 25m (Active)</td></tr></table><section class="detail-box"><h3>Start Evidence</h3><div class="evidence"></div></section><section class="detail-box"><h3>Activity Timeline</h3><div class="timeline"><p>Session Started<br><small>28 Sep 2026, 09:15 AM</small></p><p>Start Location Captured<br><small>GPS location recorded</small></p><p>Activity In Progress<br><small>Duration: 3h 25m</small></p><p>Waiting for Completion</p></div></section></aside></div>
+    <nav class="breadcrumbs"><a href="{{ route('web.dashboard') }}"><svg class="icon"><use href="#home"/></svg>Dashboard</a><span>&rsaquo;</span><span>Activity Sessions</span></nav>
+
+    <div class="page-heading session-heading">
+        <div><h1>Activity Sessions</h1><p>Monitor start-end field activities, working duration and review status.</p></div>
+        <div class="session-links"><a href="{{ route('web.activity-sessions.live') }}">Live Worker Tracking</a><a href="{{ route('web.activity-sessions.map') }}">View Full Map</a></div>
+    </div>
+
+    @if (session('status'))
+        <div class="company-toast">{{ session('status') }}</div>
+    @endif
+
+    @if ($errors->any())
+        <div class="company-toast error">{{ $errors->first() }}</div>
+    @endif
+
+    <div class="session-stats">
+        <article class="session-stat blue"><span><svg class="icon"><use href="#clock"/></svg></span><div><h2>Total Sessions</h2><strong>{{ $stats['total'] }}</strong><p>+ {{ $stats['total_month'] }} this month</p></div></article>
+        <article class="session-stat green"><span><svg class="icon"><use href="#arrow"/></svg></span><div><h2>Active Now</h2><strong>{{ $stats['active'] }}</strong><p>+ {{ $stats['active_month'] }} this month</p></div></article>
+        <article class="session-stat orange"><span><svg class="icon"><use href="#clock"/></svg></span><div><h2>Pending Review</h2><strong>{{ $stats['pending'] }}</strong><p>+ {{ $stats['pending_month'] }} this month</p></div></article>
+        <article class="session-stat purple"><span><svg class="icon"><use href="#check"/></svg></span><div><h2>Completed</h2><strong>{{ $stats['completed'] }}</strong><p>+ {{ $stats['completed_month'] }} this month</p></div></article>
+        <article class="session-stat blue"><span>x</span><div><h2>Rejected</h2><strong>{{ $stats['rejected'] }}</strong><p>+ {{ $stats['rejected_month'] }} this month</p></div></article>
+    </div>
+
+    <div class="session-layout">
+        <section class="sessions-main">
+            <div class="session-filters">
+                <input id="session-search" placeholder="Search by worker, assignment or session ID...">
+                <select id="session-company"><option value="all">All Companies</option><option value="internal">Internal</option>@foreach ($companies as $company)<option value="{{ $company->id }}">{{ $company->name }}</option>@endforeach</select>
+                <select id="session-project"><option value="all">All Projects</option>@foreach ($projects as $project)<option value="{{ $project->id }}">{{ $project->name }}</option>@endforeach</select>
+                <select id="session-status"><option value="all">All Status</option><option value="in_progress">Active</option><option value="pending_approval">Pending Review</option><option value="approved">Completed</option><option value="rejected">Rejected</option></select>
+                <input id="session-date" type="date">
+                <button id="session-reset" type="button">Reset</button>
+            </div>
+            <h2 id="session-count" style="padding:0 14px;font-size:14px">Activity Sessions ({{ count($sessions) }})</h2>
+            <table class="session-table">
+                <thead><tr><th>#</th><th>Session ID</th><th>Worker</th><th>Assignment</th><th>Project</th><th>Start Time</th><th>Duration</th><th>End Time</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="session-rows">
+                    @foreach ($sessions as $session)
+                        <tr data-id="{{ $session['id'] }}"
+                            data-code="{{ $session['code'] }}"
+                            data-worker="{{ $session['worker'] }}"
+                            data-worker-code="{{ $session['worker_code'] }}"
+                            data-worker-mobile="{{ $session['worker_mobile'] }}"
+                            data-worker-initials="{{ $session['worker_initials'] }}"
+                            data-assignment="{{ $session['assignment'] }}"
+                            data-project="{{ $session['project'] }}"
+                            data-project-id="{{ $session['project_id'] }}"
+                            data-company="{{ $session['company_id'] ?? 'internal' }}"
+                            data-company-name="{{ $session['company'] }}"
+                            data-mode="{{ $session['activity_mode'] }}"
+                            data-start-time="{{ $session['start_time'] }}"
+                            data-start-date="{{ $session['start_date'] }}"
+                            data-end-time="{{ $session['end_time'] }}"
+                            data-duration="{{ $session['duration'] }}"
+                            data-status="{{ $session['status'] }}"
+                            data-status-label="{{ $session['status_label'] }}"
+                            data-location="{{ $session['location'] }}"
+                            data-start-gps="{{ $session['start_gps'] }}"
+                            data-end-gps="{{ $session['end_gps'] }}"
+                            data-start-image="{{ $session['start_image_url'] }}"
+                            data-end-image="{{ $session['end_image_url'] }}"
+                            data-remark="{{ $session['remark'] }}"
+                            data-reviewer="{{ $session['reviewer'] }}"
+                            data-reviewed-at="{{ $session['reviewed_at'] }}"
+                            data-rejection-reason="{{ $session['rejection_reason'] }}"
+                            data-search="{{ $session['search'] }}">
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $session['code'] }}</td>
+                            <td><b>{{ $session['worker'] }}</b><small>{{ $session['worker_code'] }}</small></td>
+                            <td>{{ $session['assignment'] }}</td>
+                            <td>{{ $session['project'] }}</td>
+                            <td>{{ $session['start_time'] }}</td>
+                            <td>{{ $session['duration'] }}</td>
+                            <td>{{ $session['end_time'] }}</td>
+                            <td><span class="session-status {{ $session['status'] }}">{{ $session['status_label'] }}</span></td>
+                            <td><button class="session-view" type="button" aria-label="View {{ $session['code'] }}"><svg class="icon"><use href="#eye"/></svg></button></td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <p id="sessions-empty" class="empty-state" @if (count($sessions) > 0) hidden @endif>No activity sessions found.</p>
+        </section>
+
+        <aside class="session-detail">
+            <div class="detail-head"><h2>Session Details</h2><span>x</span></div>
+            <div class="detail-profile-session"><span id="detail-initials">WK</span><div><strong id="detail-worker">Select Session</strong><small id="detail-worker-meta">N/A</small></div></div>
+            <table class="session-info">
+                <tr><td>Assignment</td><td id="detail-assignment">N/A</td></tr>
+                <tr><td>Project</td><td id="detail-project">N/A</td></tr>
+                <tr><td>Company</td><td id="detail-company">N/A</td></tr>
+                <tr><td>Activity Mode</td><td id="detail-mode">N/A</td></tr>
+                <tr><td>Current Duration</td><td id="detail-duration">N/A</td></tr>
+                <tr><td>Start GPS</td><td id="detail-start-gps">N/A</td></tr>
+                <tr><td>End GPS</td><td id="detail-end-gps">N/A</td></tr>
+                <tr><td>Status</td><td id="detail-status">N/A</td></tr>
+            </table>
+            <section class="detail-box"><h3>Start Evidence</h3><div class="evidence" id="start-evidence"></div></section>
+            <section class="detail-box"><h3>End Evidence</h3><div class="evidence" id="end-evidence"></div></section>
+            <section class="detail-box"><h3>Activity Timeline</h3><div class="timeline" id="detail-timeline"></div></section>
+            <section class="detail-box"><h3>Review Comment</h3><textarea id="session-review-comment" name="rejection_reason" form="session-review-form" maxlength="500" placeholder="Add review comment..."></textarea></section>
+            <form id="session-review-form" method="POST" action="">
+                @csrf
+                <input type="hidden" id="session-review-status" name="status" value="approved">
+                <div class="session-review-actions"><button class="reject-button" type="submit" data-status="rejected">Reject</button><button class="approve-button" type="submit" data-status="approved">Approve</button></div>
+            </form>
+        </aside>
+    </div>
 @endsection
+
+@push('scripts')
+    <script>window.sessionReviewBaseUrl = @json(url('/activity-sessions'));</script>
+    <script src="{{ asset('js/activity-sessions.js') }}"></script>
+@endpush

@@ -146,6 +146,17 @@
 </head>
 <body>
     @include('layout.partials.icons')
+    @php
+        $authUser = auth()->user();
+        $displayName = $authUser?->name ?? 'Admin';
+        $displayRole = str((string) ($authUser?->role ?? 'admin'))->replace('_', ' ')->title();
+        $avatarInitials = collect(explode(' ', trim($displayName)))
+            ->filter()
+            ->take(2)
+            ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
+            ->implode('') ?: 'AD';
+        $topbarNotificationCount = $notificationCount ?? 0;
+    @endphp
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
     <a class="brand" href="{{ route('web.dashboard') }}">
         <svg class="brand-logo" viewBox="0 0 60 70" aria-hidden="true"><path d="M30 65S6 36 6 25a24 24 0 1 1 48 0c0 15-24 40-24 40" fill="#19bc99"/><path d="M30 1v64S7 39 7 25A24 24 0 0 1 30 1" fill="#64ddbd"/><circle cx="30" cy="24" r="8" fill="white"/><path d="M29 67C9 67 0 54 1 46c17-5 26 8 28 21m3 0c20 0 28-13 27-21-17-5-25 8-27 21" fill="#4dd79a"/></svg>
@@ -226,17 +237,16 @@
     <button class="sidebar-overlay" id="sidebar-overlay" aria-label="Close navigation"></button>
     <div class="workspace">
         <header class="topbar">
-    <button class="icon-button" id="menu-toggle" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="true"><svg class="icon"><use href="#menu"/></svg></button>
     <label class="search-box" for="dashboard-search">
         <svg class="icon" aria-hidden="true"><use href="#search"/></svg>
         <input id="dashboard-search" type="search" placeholder="Search anything..." aria-label="Search current page">
         <kbd>Ctrl + K</kbd>
     </label>
     <div class="topbar-actions">
-        <button class="icon-button notification-button" type="button" data-detail="Notifications" data-description="You have 5 recent activity updates. See Latest Activity Updates on your dashboard." aria-label="Notifications, 5 updates"><svg class="icon"><use href="#bell"/></svg><span class="notification-count">5</span></button>
-        <button class="profile" type="button" data-detail="Admin profile" data-description="Admin · Super Admin. This dashboard currently displays sample data.">
-            <span class="avatar admin-avatar">AD</span>
-            <span class="profile-text"><strong>Admin</strong><small>Super Admin</small></span>
+        <button class="icon-button notification-button" type="button" data-detail="Notifications" data-description="{{ $topbarNotificationCount }} pending items need attention." aria-label="Notifications, {{ $topbarNotificationCount }} pending items"><svg class="icon"><use href="#bell"/></svg>@if ($topbarNotificationCount > 0)<span class="notification-count">{{ $topbarNotificationCount }}</span>@endif</button>
+        <button class="profile" type="button" data-detail="Admin profile" data-description="{{ $displayName }} · {{ $displayRole }}">
+            <span class="avatar admin-avatar">{{ $avatarInitials }}</span>
+            <span class="profile-text"><strong>{{ $displayName }}</strong><small>{{ $displayRole }}</small></span>
             <svg class="icon small"><use href="#chevron"/></svg>
         </button>
     </div>

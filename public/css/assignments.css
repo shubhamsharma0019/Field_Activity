@@ -26,6 +26,18 @@
 .primary-button { color: #fff; background: #1d67f4; }
 .primary-button span { font-size: 22px; }
 .secondary-button { color: #435773; background: #edf2f9; }
+.project-activity-cta {
+    border: 1px solid #1d67f4;
+    color: #1259d9;
+    background: #e8f0ff;
+    box-shadow: 0 10px 22px rgba(29, 103, 244, 0.12);
+    font-weight: 700;
+}
+
+.project-activity-cta:hover {
+    color: #fff;
+    background: #1d67f4;
+}
 
 .assignment-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin-bottom: 13px; }
 .assignment-stat { display: flex; align-items: center; gap: 17px; min-height: 96px; padding: 16px; border: 1px solid white; border-radius: 9px; background: linear-gradient(120deg, #fff, var(--soft)); }
@@ -34,8 +46,9 @@
 .assignment-stat strong { font-size: 25px; }
 .assignment-stat p { margin: 4px 0 0; color: #079452; font-size: 11px; }
 
-.assignment-layout { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(320px, 1fr); gap: 15px; }
+.assignment-layout { display: grid; grid-template-columns: 1fr; gap: 15px; }
 .assignment-table-card, .assignment-form-card { min-width: 0; border: 1px solid #edf2f7; border-radius: 10px; background: #ffffffd9; }
+.assignment-table-card { overflow: hidden; }
 .assignment-filters { display: grid; grid-template-columns: 2fr repeat(4, 1fr) auto; gap: 8px; padding: 7px; }
 .assignment-search { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0 12px; border: 1px solid #dce5ef; border-radius: 7px; background: #fbfdff; }
 .assignment-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; }
@@ -46,18 +59,18 @@
 .assignment-table th { padding: 12px 8px; font-size: 10px; white-space: nowrap; }
 .assignment-table td { height: 55px; padding: 8px; text-overflow: ellipsis; }
 .assignment-table td small { display: block; margin-top: 3px; color: #677991; font-size: 9px; }
-.assignment-table th:first-child { width: 14px; }
-.assignment-table th:nth-child(2) { width: 24px; }
-.assignment-table th:nth-child(3) { width: 140px; }
-.assignment-table th:nth-child(4) { width: 120px; }
-.assignment-table th:nth-child(5) { width: 110px; }
-.assignment-table th:nth-child(6) { width: 90px; }
-.assignment-table th:nth-child(7) { width: 75px; }
+.assignment-table th:first-child { width: 36px; }
+.assignment-table th:nth-child(2) { width: 150px; }
+.assignment-table th:nth-child(3) { width: 135px; }
+.assignment-table th:nth-child(4) { width: 125px; }
+.assignment-table th:nth-child(5) { width: 120px; }
+.assignment-table th:nth-child(6) { width: 86px; }
+.assignment-table th:nth-child(7) { width: 92px; }
 .assignment-table th:nth-child(8) { width: 90px; }
-.assignment-table th:nth-child(9) { width: 90px; }
+.assignment-table th:nth-child(9) { width: 96px; }
 .assignment-table th:last-child { width: 86px; }
 
-.activity-badge, .mode-badge, .assignment-status { display: inline-block; padding: 6px 8px; border-radius: 5px; font-size: 10px; white-space: nowrap; }
+.activity-badge, .mode-badge, .assignment-status { display: inline-block; max-width: 124px; overflow: hidden; padding: 6px 8px; border-radius: 5px; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
 .activity-badge { color: #1764d5; background: #e5f1ff; }
 .mode-badge { color: #7439d5; background: #f0e7ff; }
 .assignment-status { color: #098752; background: #ddf7ea; }
@@ -79,17 +92,45 @@
 .form-heading { display: flex; justify-content: space-between; align-items: center; padding: 17px; border-bottom: 1px solid #edf1f6; }
 .form-heading h2 { margin: 0; font-size: 16px; }
 .form-heading button { border: 0; background: transparent; font-size: 24px; }
-.assignment-form-card form { display: grid; gap: 14px; padding: 17px; }
+.assignment-form-card form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 17px; }
 .assignment-form-card label { position: relative; display: grid; gap: 7px; font-size: 12px; font-weight: bold; }
 .assignment-form-card em { color: #df2f43; font-style: normal; }
 .assignment-form-card input, .assignment-form-card select, .assignment-form-card textarea { width: 100%; padding: 10px; border: 1px solid #cfd9e5; border-radius: 7px; background: #fbfdff; font: inherit; }
 .assignment-form-card textarea { height: 76px; resize: none; }
 .assignment-form-card label small { position: absolute; right: 8px; bottom: 7px; color: #5d6e87; font-size: 10px; font-weight: normal; }
-.assignment-actions { display: flex; gap: 9px; }
+.assignment-form-card label:nth-last-of-type(2),
+.assignment-form-card label:nth-last-of-type(1),
+.assignment-actions {
+    grid-column: 1 / -1;
+}
+
+.assignment-actions { display: flex; gap: 9px; align-items: stretch; }
 .assignment-actions > * { flex: 1; }
 
+.project-activity-create-card {
+    width: 100%;
+}
+
+.assignment-form-card .project-activity-create-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 18px;
+    padding: 22px;
+}
+
+.project-activity-create-form label {
+    min-width: 0;
+}
+
+.project-activity-create-form .wide-field,
+.project-activity-create-form .assignment-actions {
+    grid-column: 1 / -1;
+}
+
+.project-activity-create-form textarea {
+    min-height: 120px;
+}
+
 @media (max-width: 1350px) {
-    .assignment-layout { grid-template-columns: 1fr; }
     .assignment-stats { grid-template-columns: repeat(2, 1fr); }
     .assignment-filters { grid-template-columns: 1fr 1fr 1fr; }
     .assignment-search { grid-column: 1 / -1; }
@@ -102,4 +143,170 @@
     .assignment-stat h2 { font-size: 9px; }
     .assignment-stat strong { font-size: 20px; }
     .assignments-heading { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 760px) {
+    .assignment-form-card form,
+    .assignment-form-card .project-activity-create-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+.assignment-heading-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.assignment-table {
+    width: 100%;
+    min-width: 0;
+}
+
+.assignment-table th:last-child {
+    width: 70px;
+}
+
+.assignment-status.assigned,
+.assignment-status.pending-review {
+    color: #d96816;
+    background: #ffeadb;
+}
+
+.assignment-status.cancelled {
+    color: #d33543;
+    background: #ffe8e9;
+}
+
+.assignment-actions-cell {
+    text-align: center;
+}
+
+.assignment-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-right: 0;
+    font-size: 0 !important;
+}
+
+.assignment-action .icon {
+    width: 15px;
+    height: 15px;
+}
+
+.assignment-table td:last-child .assignment-action::after {
+    content: none !important;
+}
+
+.assignment-progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #50647f;
+    font-size: 10px;
+}
+
+.assignment-progress i {
+    display: block;
+    width: 46px;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #e8edf4;
+}
+
+.assignment-progress b {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: #1e70ef;
+}
+
+.assignment-stat > span .icon {
+    width: 25px;
+    height: 25px;
+}
+
+.tracking-field span {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid #d7e2ef;
+    border-radius: 8px;
+    background: #fbfdff;
+    color: #1d2e46;
+    font-weight: 600;
+}
+
+.tracking-field input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    accent-color: #1d67f4;
+}
+
+.assignment-actions .primary-button,
+.assignment-actions .secondary-button {
+    min-height: 52px;
+    padding: 13px 14px;
+    white-space: nowrap;
+}
+
+.assignment-table-card .company-table-scroll {
+    overflow-x: hidden;
+    border-top: 1px solid #eef3f8;
+}
+
+.assignment-table-card .company-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 58px;
+    padding: 12px 18px 16px;
+    border-top: 1px solid #eef3f8;
+    color: #617089;
+    font-size: 12px;
+}
+
+.assignment-table-card .page-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.assignment-table-card .page-size select {
+    min-width: 64px;
+    padding: 9px 28px 9px 12px;
+    border: 1px solid #dce5ef;
+    border-radius: 8px;
+    background: #fbfdff;
+    color: #13233a;
+    font: inherit;
+}
+
+.assignment-table-card .company-count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #edf4ff;
+    color: #31557f;
+    font-weight: 700;
+}
+
+.assignment-table-card .empty-state {
+    margin: 0;
+    padding: 28px;
+    text-align: center;
+    color: #607089;
 }

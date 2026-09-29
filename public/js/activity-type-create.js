@@ -18,11 +18,8 @@
     });
 
     document.getElementById('create-activity-type-form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        if (!event.currentTarget.reportValidity()) return;
-        const toast = document.getElementById('create-type-toast');
-        toast.textContent = 'Activity type saved in design preview.';
-        toast.hidden = false;
-        setTimeout(function () { toast.hidden = true; }, 3000);
+        if (!event.currentTarget.reportValidity()) {
+            event.preventDefault();
+        }
     });
 })();
