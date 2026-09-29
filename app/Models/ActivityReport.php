@@ -5,10 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ActivityReport extends Model
 {
     use HasFactory;
+
+    protected $appends = [
+        'image_url',
+    ];
 
     protected $fillable = [
         'assignment_id',
@@ -34,6 +39,13 @@ class ActivityReport extends Model
             'location_accuracy' => 'decimal:2',
             'resolved_at' => 'datetime',
         ];
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image_path
+            ? Storage::disk('public')->url($this->image_path)
+            : null;
     }
 
     public function assignment(): BelongsTo

@@ -6,10 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class ActivitySession extends Model
 {
     use HasFactory;
+
+    protected $appends = [
+        'start_image_url',
+        'end_image_url',
+    ];
 
     protected $fillable = [
         'assignment_id',
@@ -62,6 +68,20 @@ class ActivitySession extends Model
 
             'reviewed_at' => 'datetime',
         ];
+    }
+
+    public function getStartImageUrlAttribute(): ?string
+    {
+        return $this->start_image_path
+            ? Storage::disk('public')->url($this->start_image_path)
+            : null;
+    }
+
+    public function getEndImageUrlAttribute(): ?string
+    {
+        return $this->end_image_path
+            ? Storage::disk('public')->url($this->end_image_path)
+            : null;
     }
 
     /*

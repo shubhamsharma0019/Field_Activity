@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\WorkerAuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\ProjectController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Api\ActivitySessionController;
 use App\Http\Controllers\Api\ActivityUpdateController;
 use App\Http\Controllers\Api\WorkerLocationController;
 use App\Http\Controllers\Api\ActivityReportController;
+use App\Http\Controllers\Api\ProgressController;
 
 
 /*
@@ -22,8 +24,30 @@ use App\Http\Controllers\Api\ActivityReportController;
 |--------------------------------------------------------------------------
 */
 
+/*
+ * General Login
+ *
+ * Admin / Super Admin / Company / Worker
+ */
 Route::post('/login', [
     AuthController::class,
+    'login'
+]);
+
+
+/*
+ * Worker Self Registration
+ *
+ * Mobile Application:
+ * Worker enters company code and basic details.
+ */
+Route::post('/worker/register', [
+    WorkerAuthController::class,
+    'register'
+]);
+
+Route::post('/worker/login', [
+    WorkerAuthController::class,
     'login'
 ]);
 
@@ -89,6 +113,38 @@ Route::middleware('auth:sanctum')->group(function () {
         'update'
     ]);
 
+    Route::patch('/workers/{id}/activate', [
+        UserController::class,
+        'activateWorker'
+    ]);
+
+    Route::patch('/workers/{id}/deactivate', [
+        UserController::class,
+        'deactivateWorker'
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Progress / Dashboard
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/dashboard/summary', [
+        ProgressController::class,
+        'summary'
+    ]);
+
+    Route::get('/projects/{id}/progress', [
+        ProgressController::class,
+        'project'
+    ]);
+
+    Route::get('/workers/{id}/progress', [
+        ProgressController::class,
+        'worker'
+    ]);
+
 
     /*
     |--------------------------------------------------------------------------
@@ -145,7 +201,7 @@ Route::middleware('auth:sanctum')->group(function () {
     */
 
     /*
-     * Worker finishes a continuous tracking activity.
+     * Worker finishes continuous tracking activity.
      *
      * in_progress
      *      ↓
@@ -165,7 +221,7 @@ Route::middleware('auth:sanctum')->group(function () {
      *
      * pending_approval
      *      ↓
-     * completed / rejected flow
+     * completed / rejected
      */
     Route::patch(
         '/project-assignments/{id}/review',

@@ -454,4 +454,71 @@ class UserController extends Controller
             ],
         ]);
     }
+
+    public function activateWorker(
+        Request $request,
+        int $id
+    ): JsonResponse {
+        return $this->updateWorkerStatus(
+            $request,
+            $id,
+            'active',
+            'Worker activated successfully.'
+        );
+    }
+
+    public function deactivateWorker(
+        Request $request,
+        int $id
+    ): JsonResponse {
+        return $this->updateWorkerStatus(
+            $request,
+            $id,
+            'inactive',
+            'Worker deactivated successfully.'
+        );
+    }
+
+    private function updateWorkerStatus(
+        Request $request,
+        int $id,
+        string $status,
+        string $message
+    ): JsonResponse {
+        $authUser = $request->user();
+
+        if (!in_array(
+            $authUser->role,
+            ['super_admin', 'admin'],
+            true
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only admin or super admin can update worker status.',
+            ], 403);
+        }
+
+        $worker = User::with('company')->findOrFail($id);
+
+        if ($worker->role !== 'worker') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Selected user is not a worker.',
+            ], 422);
+        }
+
+        $worker->update([
+            'status' => $status,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => [
+                'worker' => $worker
+                    ->fresh()
+                    ->load('company'),
+            ],
+        ]);
+    }
 }
