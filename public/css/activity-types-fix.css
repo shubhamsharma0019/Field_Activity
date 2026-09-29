@@ -1,0 +1,117 @@
+/* Visual fixes for the Activity Types page. */
+.activity-filters .company-search {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid #dce5ef;
+    border-radius: 7px;
+    background: #fbfdff;
+    color: #536786;
+}
+
+.activity-filters .company-search input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #273957;
+    font: inherit;
+}
+
+.activity-filters .company-search:focus-within {
+    border-color: #1f72ed;
+    outline: 2px solid #b8d3fb;
+}
+
+.activity-table-card {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.activity-table {
+    width: 100%;
+    min-width: 720px;
+    table-layout: fixed;
+}
+
+.activity-table th:nth-child(1) { width: 5%; }
+.activity-table th:nth-child(2) { width: 19%; }
+.activity-table th:nth-child(3) { width: 25%; }
+.activity-table th:nth-child(4) { width: 18%; }
+.activity-table th:nth-child(5) { width: 11%; }
+.activity-table th:nth-child(6) { width: 105px; }
+.activity-table th:nth-child(7) { width: 90px; }
+
+.activity-table td {
+    overflow-wrap: anywhere;
+}
+
+.activity-table td:last-child {
+    white-space: nowrap;
+}
+
+.activity-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    padding: 8px;
+}
+
+.activity-actions {
+    display: flex;
+    gap: 7px;
+}
+
+.activity-form-card {
+    min-width: 0;
+}
+
+.activity-form-card input:not([type="radio"]):not([type="checkbox"]),
+.activity-form-card textarea {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    margin-top: 7px;
+    padding: 11px;
+    border: 1px solid #cfd9e5;
+    border-radius: 7px;
+    outline: 0;
+    background: #fbfdff;
+    color: #273957;
+    font: inherit;
+}
+
+.activity-form-card input:focus,
+.activity-form-card textarea:focus {
+    border-color: #1f72ed;
+    box-shadow: 0 0 0 2px #b8d3fb;
+}
+
+.activity-form-card textarea {
+    min-height: 88px;
+}
+
+.activity-form-card fieldset label {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    column-gap: 8px;
+    align-items: start;
+}
+
+.activity-form-card fieldset label small {
+    grid-column: 2;
+    margin: 2px 0 0;
+}
+
+@media (min-width: 1001px) {
+    .activity-form-card {
+        position: sticky;
+        top: 18px;
+        align-self: start;
+    }
+}

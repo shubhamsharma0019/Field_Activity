@@ -1,0 +1,240 @@
+.create-assignment-heading {
+    margin-bottom: 16px;
+}
+
+.create-assignment-heading h1 {
+    margin-bottom: 4px;
+    font-size: 31px;
+}
+
+.create-assignment-heading p {
+    font-size: 15px;
+}
+
+.create-assignment-form {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(310px, 1fr);
+    gap: 16px;
+}
+
+.assignment-card {
+    padding: 20px;
+    border: 1px solid #edf2f7;
+    border-radius: 11px;
+    background: #ffffffdc;
+}
+
+.assignment-card-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.assignment-card-title > span {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 9px;
+    color: #176be9;
+    background: #e9f3ff;
+}
+
+.assignment-card-title h2,
+.assignment-side-card h2 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.assignment-card-title p,
+.assignment-side-card p {
+    margin: 5px 0 0;
+    color: #5c6d87;
+    font-size: 13px;
+}
+
+.assignment-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 26px;
+}
+
+.assignment-fields label,
+.assignment-side-card label {
+    display: grid;
+    gap: 8px;
+    color: #101b2e;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.assignment-fields em,
+.assignment-side-card em {
+    color: #e53446;
+    font-style: normal;
+}
+
+.assignment-control {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-height: 44px;
+    padding: 0 13px;
+    border: 1px solid #ced9e5;
+    border-radius: 7px;
+    background: #fbfdff;
+    color: #536786;
+    font-weight: normal;
+}
+
+.assignment-control:focus-within {
+    border-color: #1f72ed;
+    outline: 2px solid #b8d3fb;
+}
+
+.assignment-control input,
+.assignment-control select,
+.assignment-fields > label > select,
+.assignment-fields > label > input {
+    width: 100%;
+    min-height: 44px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #273957;
+    font: inherit;
+    font-weight: normal;
+}
+
+.assignment-fields > label > select,
+.assignment-fields > label > input {
+    padding: 0 13px;
+    border: 1px solid #ced9e5;
+    border-radius: 7px;
+    background: #fbfdff;
+}
+
+.assignment-wide-field {
+    position: relative;
+    grid-column: 1 / -1;
+}
+
+.assignment-wide-field textarea {
+    width: 100%;
+    height: 100px;
+    padding: 12px;
+    border: 1px solid #ced9e5;
+    border-radius: 7px;
+    background: #fbfdff;
+    resize: none;
+    font: inherit;
+}
+
+.assignment-wide-field small {
+    position: absolute;
+    right: 9px;
+    bottom: 8px;
+    color: #5d6e87;
+    font-size: 10px;
+    font-weight: normal;
+}
+
+.assignment-side-panel {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+}
+
+.assignment-side-card {
+    padding: 20px;
+    border: 1px solid #edf2f7;
+    border-radius: 11px;
+    background: #ffffffdc;
+}
+
+.assignment-side-card label {
+    margin-top: 17px;
+}
+
+.assignment-side-card select,
+.assignment-side-card input {
+    min-height: 44px;
+    padding: 0 13px;
+    border: 1px solid #ced9e5;
+    border-radius: 7px;
+    background: #fbfdff;
+    color: #273957;
+    font: inherit;
+    font-weight: normal;
+}
+
+.assignment-help {
+    display: flex;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 9px;
+    color: #234168;
+    background: #eaf4ff;
+}
+
+.assignment-help > span {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: white;
+    background: #1973f4;
+    font-weight: bold;
+}
+
+.assignment-help p {
+    margin: 7px 0 0;
+    color: #5a718f;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.assignment-save-bar {
+    display: flex;
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 15px 19px;
+    border-radius: 9px;
+    background: #ffffffdc;
+}
+
+.assignment-save-bar a,
+.assignment-save-bar button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 45px;
+    padding: 0 19px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.assignment-cancel-button {
+    color: #435773;
+    background: #edf2f9;
+}
+
+.assignment-save-button {
+    color: white;
+    background: #1d67f4;
+}
+
+@media (max-width: 1050px) {
+    .create-assignment-form { grid-template-columns: 1fr; }
+    .assignment-side-panel { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 650px) {
+    .assignment-fields,
+    .assignment-side-panel { grid-template-columns: 1fr; }
+    .assignment-save-bar > * { flex: 1; }
+}

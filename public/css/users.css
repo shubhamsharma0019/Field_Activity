@@ -1,0 +1,101 @@
+/* Users page */
+.primary-button, .secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 8px; padding: 13px 18px; font-size: 14px; }
+.primary-button { color: white; background: #1d67f4; }.primary-button:hover { background: #1758d2; }.primary-button > span { font-size: 22px; line-height: 1; }.secondary-button { color: #435773; background: #edf2f9; }
+.company-status { display: inline-block; padding: 7px 11px; border-radius: 7px; color: #098752; background: #ddf7ea; font-size: 12px; }.company-status.inactive { color: #d96816; background: #ffeadb; }
+.company-actions { display: flex; gap: 7px; }.company-action { border: 0; border-radius: 7px; padding: 7px; color: #1968e5; background: #eaf2fe; font-size: 10px; }.company-action.edit { color: #526987; background: #edf2f8; }
+.company-footer { display: flex; align-items: center; gap: 20px; padding: 22px 9px; }.page-size { display: flex; align-items: center; gap: 9px; }.page-size select { padding: 8px; border: 1px solid #dce5ef; border-radius: 7px; background: white; }.company-count { color: #718299; font-size: 11px; }.pagination { display: flex; gap: 6px; margin-left: auto; }.pagination button { min-width: 38px; height: 38px; border: 1px solid #e1e8f2; border-radius: 8px; background: #fbfdff; }.pagination button.active { color: white; border-color: #1e6bf6; background: #1e6bf6; }
+.users-heading { margin-bottom: 15px; }
+.users-heading h1 { margin-bottom: 3px; font-size: 31px; }
+.users-heading p { font-size: 15px; }
+
+/* Summary cards */
+.user-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 14px 0;
+}
+.user-stat {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-height: 102px;
+    padding: 18px;
+    border: 1px solid white;
+    border-radius: 10px;
+    background: linear-gradient(120deg, white, var(--soft));
+}
+.user-stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    border-radius: 11px;
+    background: var(--accent);
+    color: white;
+}
+.user-stat-icon .icon { width: 30px; height: 30px; }
+.user-stat h2 { margin: 0 0 7px; font-size: 12px; }
+.user-stat strong { font-size: 27px; }
+.user-stat p { margin: 7px 0 0; color: #079452; font-size: 12px; }
+
+/* Filter area */
+.user-filters {
+    display: grid;
+    grid-template-columns: 2.6fr 1.15fr 1.3fr 1.1fr auto;
+    gap: 10px;
+    padding: 6px;
+    margin-bottom: 9px;
+    border-radius: 9px;
+    background: #ffffffa6;
+}
+.user-filters select {
+    border: 1px solid #dce5ef;
+    border-radius: 7px;
+    padding: 10px;
+    background: #fbfdff;
+    color: #2f415e;
+    font: inherit;
+    font-size: 12px;
+}
+.reset-button {
+    border: 0;
+    border-radius: 7px;
+    padding: 0 16px;
+    background: #eaf2fc;
+    color: #3b5d91;
+    font-weight: 600;
+}
+
+/* Table */
+.user-panel { padding: 6px 7px 0; border-radius: 10px; background: #ffffffc9; }
+.user-table { min-width: 1030px; font-size: 12px; }
+.user-table th { padding: 13px 10px; font-size: 12px; }
+.user-table td { height: 56px; padding: 6px 10px; }
+.user-table input { width: 18px; height: 18px; accent-color: #1e6bf6; }
+.user-name { display: flex; align-items: center; gap: 10px; color: #13213a; }
+.user-avatar { width: 36px; height: 36px; background: linear-gradient(145deg, #bfd8e8, #e7edf2); color: #233c56; font-size: 10px; }
+.user-name small { display: block; margin-top: 4px; color: #677991; font-size: 10px; }
+.role-badge { display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 11px; }
+.role-badge.worker { background: #e5f1ff; color: #1764d5; }
+.role-badge.company { background: #f0e7ff; color: #7439d5; }
+.role-badge.admin { background: #ffe8e9; color: #d33543; }
+.user-action { width: 32px; height: 32px; }
+
+/* Tablet and mobile */
+@media (max-width: 1100px) {
+    .user-stats { grid-template-columns: repeat(2, 1fr); }
+    .user-filters { grid-template-columns: 2fr 1fr 1fr; }
+    .user-filters .company-search { grid-column: 1 / -1; }
+}
+@media (max-width: 550px) {
+    .user-stats { gap: 10px; }
+    .user-stat { gap: 9px; padding: 13px 10px; }
+    .user-stat-icon { width: 40px; height: 40px; }
+    .user-stat h2 { font-size: 10px; }
+    .user-stat strong { font-size: 22px; }
+    .user-stat p { font-size: 10px; }
+    .user-filters { grid-template-columns: 1fr 1fr; }
+    .user-filters .company-search { grid-column: 1 / -1; }
+}

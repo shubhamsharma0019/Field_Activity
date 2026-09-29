@@ -1,0 +1,1 @@
+(() => { document.querySelectorAll('.quick-grid button, .session-show-actions .end').forEach(function (button) { button.addEventListener('click', function () { const toast=document.getElementById('session-toast'); toast.textContent=`${button.textContent} saved in design preview.`; toast.hidden=false; setTimeout(function(){toast.hidden=true;},2000); }); }); })();
