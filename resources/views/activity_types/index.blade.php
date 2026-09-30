@@ -116,7 +116,7 @@
             </div>
         </section>
 
-        <aside id="activity-form-panel" class="activity-form-card">
+        <aside id="activity-form-panel" class="activity-form-card" @if (! $errors->any()) hidden @endif>
             <div class="form-heading">
                 <h2>Add New Activity Type</h2>
                 <button id="close-activity-form" type="button" aria-label="Close activity type form">x</button>

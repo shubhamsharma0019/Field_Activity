@@ -30,26 +30,96 @@
     overflow: hidden;
 }
 
-.activity-table {
-    width: 100%;
-    min-width: 720px;
-    table-layout: fixed;
+.activity-layout:has(.activity-form-card[hidden]) {
+    grid-template-columns: 1fr;
 }
 
-.activity-table th:nth-child(1) { width: 5%; }
-.activity-table th:nth-child(2) { width: 19%; }
-.activity-table th:nth-child(3) { width: 25%; }
-.activity-table th:nth-child(4) { width: 18%; }
-.activity-table th:nth-child(5) { width: 11%; }
-.activity-table th:nth-child(6) { width: 105px; }
-.activity-table th:nth-child(7) { width: 90px; }
+.activity-form-card[hidden] {
+    display: none;
+}
+
+.company-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.activity-table {
+    width: 100%;
+    min-width: 920px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.activity-table th:nth-child(1) { width: 46px; }
+.activity-table th:nth-child(2) { width: 210px; }
+.activity-table th:nth-child(3) { width: 300px; }
+.activity-table th:nth-child(4) { width: 165px; }
+.activity-table th:nth-child(5) { width: 105px; }
+.activity-table th:nth-child(6) { width: 132px; }
+.activity-table th:nth-child(7) { width: 84px; }
+
+.activity-table th,
+.activity-table td {
+    vertical-align: middle;
+}
 
 .activity-table td {
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+}
+
+.activity-name {
+    align-items: flex-start;
+    min-width: 0;
+    line-height: 1.35;
+}
+
+.activity-name .activity-icon {
+    margin-top: -4px;
 }
 
 .activity-table td:last-child {
     white-space: nowrap;
+}
+
+.activity-table-card .company-footer {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px 18px;
+    border-top: 1px solid #edf2f7;
+}
+
+.activity-table-card .page-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    color: #52657f;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.activity-table-card .page-size select {
+    min-width: 56px;
+    height: 34px;
+    padding: 0 8px;
+    border: 1px solid #d4deeb;
+    border-radius: 6px;
+    background: #fbfdff;
+    color: #17233b;
+    font: inherit;
+}
+
+.activity-table-card .company-count {
+    color: #65758c;
+    font-size: 13px;
+}
+
+.mode-badge,
+.activity-status {
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.25;
 }
 
 .activity-action {
@@ -69,6 +139,10 @@
 
 .activity-form-card {
     min-width: 0;
+}
+
+.activity-form-card form {
+    gap: 18px;
 }
 
 .activity-form-card input:not([type="radio"]):not([type="checkbox"]),
@@ -113,5 +187,11 @@
         position: sticky;
         top: 18px;
         align-self: start;
+    }
+}
+
+@media (max-width: 1300px) {
+    .activity-layout {
+        grid-template-columns: 1fr;
     }
 }

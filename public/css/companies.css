@@ -83,12 +83,13 @@
 .logo-panel { padding: 22px; }
 .logo-panel h2, .company-info h2 { margin: 0; font-size: 16px; }
 .upload-box { display: flex; align-items: center; justify-content: center; min-height: 258px; margin-top: 19px; padding: 15px; border: 1px dashed #a8c5e8; border-radius: 8px; background: #f8fbff; color: #526784; text-align: center; cursor: pointer; overflow: hidden; }
+.upload-box [hidden] { display: none !important; }
 .upload-box span { display: grid; justify-items: center; gap: 9px; }
 .upload-box strong { color: #465978; font-size: 15px; }
 .upload-box small { font-size: 12px; }
 .upload-box b { margin-top: 12px; padding: 11px 19px; border: 1px solid #d3e0ef; border-radius: 7px; background: #eef4fb; color: #17233a; font-size: 13px; }
 .upload-icon { width: 45px; height: 45px; fill: none; stroke: #506584; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.upload-box img { max-width: 100%; max-height: 230px; border-radius: 6px; object-fit: contain; }
+.upload-box img { width: 100%; max-width: 240px; max-height: 220px; border-radius: 6px; object-fit: contain; }
 .upload-error { margin: 8px 0 0; color: #ce2940; font-size: 12px; }
 .company-info { display: flex; gap: 11px; padding: 22px; border-radius: 8px; background: #eaf4ff; color: #1f325a; }
 .company-info > span { display: flex; align-items: center; justify-content: center; width: 21px; height: 21px; flex-shrink: 0; border-radius: 50%; background: #1973f4; color: white; font-weight: bold; }
