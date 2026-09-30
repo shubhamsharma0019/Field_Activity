@@ -54,16 +54,16 @@
                     <tbody id="assignment-rows">
                         @foreach ($assignments as $assignment)
                             <tr data-search="{{ $assignment['search'] }}" data-company="{{ $assignment['company_id'] ?? 'internal' }}" data-project="{{ $assignment['project_id'] }}" data-activity-type="{{ $assignment['activity_type_id'] }}" data-status="{{ $assignment['status'] }}">
-                                <td>{{ $loop->iteration }}</td>
-                                <td><strong>{{ $assignment['title'] }}</strong><small>{{ $assignment['code'] }}</small></td>
-                                <td>{{ $assignment['project'] }}</td>
-                                <td><strong>{{ $assignment['worker'] }}</strong><small>{{ $assignment['worker_code'] }}</small></td>
-                                <td><span class="activity-badge">{{ $assignment['activity_type'] }}</span></td>
-                                <td><span class="mode-badge">{{ $assignment['mode'] }}</span></td>
-                                <td>{{ $assignment['due_date'] }}</td>
-                                <td><span class="assignment-status {{ str_replace('_', '-', $assignment['status']) }}">{{ $assignment['status_label'] }}</span></td>
-                                <td><span class="assignment-progress"><i><b style="width: {{ $assignment['progress'] }}%"></b></i>{{ $assignment['completed'] }}/{{ $assignment['target'] ?: 0 }}</span></td>
-                                <td class="assignment-actions-cell">
+                                <td data-label="#">{{ $loop->iteration }}</td>
+                                <td data-label="Assignment"><strong>{{ $assignment['title'] }}</strong><small>{{ $assignment['code'] }}</small></td>
+                                <td data-label="Project">{{ $assignment['project'] }}</td>
+                                <td data-label="Worker"><strong>{{ $assignment['worker'] }}</strong><small>{{ $assignment['worker_code'] }}</small></td>
+                                <td data-label="Work Type"><span class="activity-badge">{{ $assignment['activity_type'] }}</span></td>
+                                <td data-label="Mode"><span class="mode-badge">{{ $assignment['mode'] }}</span></td>
+                                <td data-label="Due Date">{{ $assignment['due_date'] }}</td>
+                                <td data-label="Status"><span class="assignment-status {{ str_replace('_', '-', $assignment['status']) }}">{{ $assignment['status_label'] }}</span></td>
+                                <td data-label="Progress"><span class="assignment-progress"><i><b style="width: {{ $assignment['progress'] }}%"></b></i>{{ $assignment['completed'] }}/{{ $assignment['target'] ?: 0 }}</span></td>
+                                <td data-label="Actions" class="assignment-actions-cell">
                                     <button class="assignment-action" type="button" data-detail="{{ $assignment['title'] }}" data-description="Project: {{ $assignment['project'] }}. Worker: {{ $assignment['worker'] }}. Progress: {{ $assignment['completed'] }}/{{ $assignment['target'] ?: 0 }}." aria-label="View {{ $assignment['title'] }}"><svg class="icon"><use href="#eye"/></svg></button>
                                 </td>
                             </tr>

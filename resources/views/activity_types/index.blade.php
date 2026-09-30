@@ -86,18 +86,18 @@
                     <tbody id="activity-rows">
                         @foreach ($activities as $activity)
                             <tr data-status="{{ $activity['status'] }}" data-search="{{ strtolower($activity['name'].' '.$activity['description'].' '.$activity['mode_label'].' '.$activity['status_label']) }}">
-                                <td>{{ $loop->iteration }}</td>
-                                <td>
+                                <td data-label="#">{{ $loop->iteration }}</td>
+                                <td data-label="Work Type">
                                     <span class="activity-name">
                                         <span class="activity-icon"><svg class="icon"><use href="#{{ $activity['icon'] }}"/></svg></span>
                                         {{ $activity['name'] }}
                                     </span>
                                 </td>
-                                <td>{{ $activity['description'] }}</td>
-                                <td><span class="mode-badge {{ $activity['activity_mode'] }}">{{ $activity['mode_label'] }}</span></td>
-                                <td><span class="activity-status {{ $activity['status'] === 'inactive' ? 'inactive' : '' }}">{{ $activity['status_label'] }}</span></td>
-                                <td>{{ $activity['assignments_count'] }}</td>
-                                <td>
+                                <td data-label="Description">{{ $activity['description'] }}</td>
+                                <td data-label="Default Mode"><span class="mode-badge {{ $activity['activity_mode'] }}">{{ $activity['mode_label'] }}</span></td>
+                                <td data-label="Status"><span class="activity-status {{ $activity['status'] === 'inactive' ? 'inactive' : '' }}">{{ $activity['status_label'] }}</span></td>
+                                <td data-label="Total Assignments">{{ $activity['assignments_count'] }}</td>
+                                <td data-label="Actions">
                                     <div class="activity-actions">
                                         <button class="activity-action" type="button" data-detail="{{ $activity['name'] }}" data-description="Mode: {{ $activity['mode_label'] }}. Tracking required: {{ $activity['tracking_required'] ? 'Yes' : 'No' }}. Used in {{ $activity['assignments_count'] }} project activities." aria-label="View {{ $activity['name'] }}">
                                             <svg class="icon"><use href="#eye"/></svg>

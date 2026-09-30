@@ -87,8 +87,8 @@
             }
 
             .topbar {
-                height: 33px;
-                padding: 0 7px;
+                height: 58px;
+                padding: 0 12px;
             }
 
             .topbar .icon {
@@ -97,8 +97,8 @@
             }
 
             .search-box {
-                max-width: 155px;
-                padding: 5px 9px;
+                max-width: none;
+                padding: 8px 11px;
             }
 
             .search-box input {
@@ -246,6 +246,9 @@
     <button class="sidebar-overlay" id="sidebar-overlay" aria-label="Close navigation"></button>
     <div class="workspace">
         <header class="topbar">
+    <button class="icon-button menu-toggle" type="button" id="menu-toggle" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
+        <svg class="icon" aria-hidden="true"><use href="#menu"/></svg>
+    </button>
     <div class="topbar-search-wrap">
     <label class="search-box" for="dashboard-search">
         <svg class="icon" aria-hidden="true"><use href="#search"/></svg>

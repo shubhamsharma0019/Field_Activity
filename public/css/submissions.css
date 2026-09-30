@@ -40,3 +40,201 @@
 .empty-state { padding: 22px; text-align: center; color: #64748a; }
 @media (max-width: 1400px) { .submissions-layout { grid-template-columns: 1fr; }.submission-detail { max-width: none; }.submission-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 800px) { .submission-filters { grid-template-columns: 1fr 1fr; }.submission-search { grid-column: 1 / -1; }.submission-grid { grid-template-columns: repeat(2, 1fr); }.submission-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 550px) {
+    .submissions-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .submissions-heading .export-button {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .submission-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .submission-stat {
+        gap: 10px;
+        min-width: 0;
+        min-height: 88px;
+        padding: 12px 10px;
+    }
+
+    .submission-stat > span {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+    }
+
+    .submission-stat h2 {
+        font-size: 10px;
+    }
+
+    .submission-stat strong {
+        font-size: 22px;
+    }
+
+    .submission-stat p {
+        font-size: 10px;
+    }
+
+    .submissions-layout {
+        gap: 12px;
+    }
+
+    .submission-filters {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 12px;
+        background: #ffffffbf;
+    }
+
+    .submission-search {
+        min-height: 44px;
+        padding: 0 13px;
+        border-radius: 8px;
+    }
+
+    .submission-search .icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    .submission-search input {
+        height: 42px;
+        font-size: 12px;
+    }
+
+    .submission-filters select,
+    .submission-filters button {
+        width: 100%;
+        min-height: 44px;
+        padding: 0 13px;
+        border-radius: 8px;
+        font-size: 12px;
+    }
+
+    .submission-filters button {
+        background: #eaf2fc;
+        font-weight: 700;
+    }
+
+    .submissions-card {
+        padding: 0;
+        background: transparent;
+    }
+
+    .submissions-card-header {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 0 0 10px;
+    }
+
+    .submissions-card-header h2 {
+        font-size: 16px;
+    }
+
+    .submissions-card-header select {
+        width: 100%;
+        min-height: 42px;
+        font-size: 12px;
+    }
+
+    .submission-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .submission-item {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr);
+        gap: 0 12px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .submission-photo {
+        grid-row: 1 / span 5;
+        width: 96px;
+        height: 96px;
+        border-radius: 9px;
+    }
+
+    .submission-item h3,
+    .submission-item p,
+    .submission-item strong,
+    .submission-status {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .submission-item h3 {
+        margin-top: 0;
+        font-size: 13px;
+        line-height: 1.35;
+    }
+
+    .submission-item p,
+    .submission-item strong {
+        font-size: 11px;
+        line-height: 1.35;
+    }
+
+    .submission-status {
+        justify-self: start;
+        font-size: 10px;
+    }
+
+    .submission-detail {
+        border-radius: 12px;
+    }
+
+    .detail-heading {
+        padding: 14px;
+    }
+
+    .detail-photo {
+        height: 210px;
+        margin: 12px;
+    }
+
+    .detail-section {
+        padding: 0 12px 12px;
+    }
+
+    .detail-table {
+        table-layout: fixed;
+        font-size: 11px;
+        white-space: normal;
+    }
+
+    .detail-table td {
+        overflow-wrap: anywhere;
+        vertical-align: top;
+    }
+
+    .detail-table td:first-child {
+        width: 92px;
+    }
+
+    .comment-box {
+        min-height: 72px;
+        font-size: 12px;
+    }
+
+    .detail-actions {
+        padding: 10px 12px 14px;
+    }
+
+    .detail-actions button {
+        min-height: 42px;
+        font-size: 12px;
+    }
+}

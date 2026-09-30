@@ -39,6 +39,37 @@ if (overlay) {
 window.addEventListener('resize', updateMenuState);
 updateMenuState();
 
+function alignDashboardDetailPanels() {
+    const detailRows = Array.from(document.querySelectorAll('.details-grid'));
+
+    if (detailRows.length < 2 || detailRows[0].classList.contains('details-columns')) {
+        return;
+    }
+
+    const evidencePanel = detailRows[0].children[0];
+    const targetPanel = detailRows[0].children[1];
+    const assignmentsPanel = detailRows[1].children[0];
+    const updatesPanel = detailRows[1].children[1];
+
+    if (!evidencePanel || !targetPanel || !assignmentsPanel || !updatesPanel) {
+        return;
+    }
+
+    const leftColumn = document.createElement('div');
+    const rightColumn = document.createElement('div');
+
+    leftColumn.className = 'details-column';
+    rightColumn.className = 'details-column';
+    detailRows[0].classList.add('details-columns');
+
+    leftColumn.append(evidencePanel, assignmentsPanel);
+    rightColumn.append(targetPanel, updatesPanel);
+    detailRows[0].append(leftColumn, rightColumn);
+    detailRows[1].remove();
+}
+
+alignDashboardDetailPanels();
+
 const search = document.getElementById('dashboard-search');
 const searchResults = document.getElementById('topbar-search-results');
 const globalSearchItems = Array.isArray(window.globalSearchItems) ? window.globalSearchItems : [];

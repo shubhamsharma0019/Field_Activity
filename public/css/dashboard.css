@@ -28,6 +28,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .workspace { margin-left: 230px; transition: margin-left .2s; }
 .topbar { height: 65px; display: flex; align-items: center; gap: 26px; padding: 0 28px; border-bottom: 1px solid #e6edf5; background: #ffffffb5; }
 .icon-button { display: inline-flex; align-items: center; justify-content: center; background: transparent; color: #4b5e77; border: 0; padding: 8px; border-radius: 7px; }
+.menu-toggle { display: none; flex-shrink: 0; }
 .topbar-search-wrap { position: relative; width: min(510px, 48%); }
 .search-box { display: flex; align-items: center; gap: 14px; width: 100%; background: #edf3fa; border-radius: 25px; padding: 10px 18px; color: #63758c; }
 .search-box .icon { width: 18px; height: 18px; }
@@ -115,7 +116,11 @@ select.period-label { background: white; color: #33435a; cursor: pointer; }
 .status-legend span { flex: 1; white-space: nowrap; }
 .status-legend small { margin-left: 8px; color: #63748c; font-size: 12px; }
 /* Assignments and activity feed */
-.details-grid { display: grid; grid-template-columns: 1.9fr 1fr; gap: 18px; margin-top: 18px; }
+.details-grid { display: grid; align-items: stretch; grid-template-columns: 1.9fr 1fr; gap: 18px; margin-top: 18px; }
+.details-grid > .panel { height: 100%; }
+.details-grid.details-columns { grid-template-columns: 1.9fr 1fr; }
+.details-column { display: grid; align-content: start; gap: 18px; min-width: 0; }
+.details-column .submissions-panel { margin-top: 0; }
 .review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 17px 17px; }
 .review-card { padding: 17px 14px; border-radius: 10px; background: var(--soft); color: var(--accent); }
 .review-card strong { display: block; font-size: 27px; line-height: 1; }
@@ -201,17 +206,35 @@ dialog p { font-size: 14px; line-height: 1.7; color: #617189; }
     .sidebar-collapsed .workspace { margin-left: 0; }
     .sidebar-open .sidebar { transform: translateX(0); }
     .sidebar-open .sidebar-overlay { display: block; position: fixed; inset: 0; z-index: 25; border: 0; background: #10223670; }
-    .topbar { padding: 0 12px; gap: 10px; }
+    .menu-toggle { display: inline-flex; }
+    .topbar { position: sticky; top: 0; z-index: 20; padding: 0 12px; gap: 10px; }
     .topbar-search-wrap { flex: 1; width: auto; }
     .search-box { flex: 1; width: auto; padding: 9px 12px; }
     .search-box kbd, .profile-text { display: none; }
-    .topbar-actions { gap: 5px; }
+    .topbar-actions { gap: 5px; margin-left: 0; }
+    .topbar-dropdown { right: 0; width: min(290px, calc(100vw - 24px)); }
+    .topbar-actions > .profile-menu { top: 52px; right: 8px; }
     .profile { padding-left: 9px; gap: 4px; }
     .page-content { padding: 20px 14px; }
     h1 { font-size: 23px; }
+    .page-heading { gap: 12px; }
+    .date-card { width: 100%; }
+    .stats-grid, .shortcuts-grid { grid-template-columns: 1fr; gap: 12px; }
     .stat-card { min-height: 103px; }
+    .charts-grid, .details-grid, .details-grid.details-columns { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .details-column { gap: 14px; }
     .panel-heading h2 { font-size: 16px; }
     .review-grid { grid-template-columns: 1fr; }
+    .chart-legend { justify-content: flex-start; flex-wrap: wrap; gap: 10px 16px; padding: 10px 16px 0; }
+    .activity-chart { min-width: 620px; }
+    .activity-panel { overflow-x: auto; }
+    .status-content { flex-direction: column; align-items: stretch; gap: 18px; padding: 14px 16px 18px; }
+    .donut { align-self: center; }
+    .status-legend { max-width: none; }
+    .table-scroll { margin: 0 10px 12px; }
+    table { min-width: 720px; }
+    .updates-list { padding-inline: 12px; }
+    .update-row { padding: 8px 2px; }
 }
 @media (max-width: 400px) {
     .stats-grid, .shortcuts-grid { gap: 10px; }

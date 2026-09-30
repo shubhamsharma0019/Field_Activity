@@ -61,16 +61,16 @@
             const inactiveClass = user.status === 'inactive' ? ' inactive' : '';
 
             return '<tr>'
-                + '<td><input type="checkbox" aria-label="Select ' + escapeText(user.name) + '"></td>'
-                + '<td>' + (startIndex + index + 1) + '</td>'
-                + '<td><span class="user-name"><span class="avatar user-avatar">' + escapeText(initials(user.name)) + '</span><span>' + escapeText(user.name) + '<small>' + escapeText(user.code) + '</small></span></span></td>'
-                + '<td>' + escapeText(user.email) + '</td>'
-                + '<td>' + escapeText(user.mobile) + '</td>'
-                + '<td><span class="role-badge ' + escapeText(user.role) + '">' + escapeText(user.role_label) + '</span></td>'
-                + '<td>' + escapeText(user.company) + '</td>'
-                + '<td><span class="company-status' + inactiveClass + '">' + escapeText(user.status_label) + '</span></td>'
-                + '<td>' + escapeText(user.created_date) + '</td>'
-                + '<td><div class="company-actions"><button class="company-action user-action" data-user-id="' + user.id + '" data-user-action="view" type="button">View</button><button class="company-action edit user-action" data-user-id="' + user.id + '" data-user-action="edit" type="button">Edit</button></div></td>'
+                + '<td data-label="Select"><input type="checkbox" aria-label="Select ' + escapeText(user.name) + '"></td>'
+                + '<td data-label="#">' + (startIndex + index + 1) + '</td>'
+                + '<td data-label="Name"><span class="user-name"><span class="avatar user-avatar">' + escapeText(initials(user.name)) + '</span><span>' + escapeText(user.name) + '<small>' + escapeText(user.code) + '</small></span></span></td>'
+                + '<td data-label="Email">' + escapeText(user.email) + '</td>'
+                + '<td data-label="Mobile">' + escapeText(user.mobile) + '</td>'
+                + '<td data-label="Role"><span class="role-badge ' + escapeText(user.role) + '">' + escapeText(user.role_label) + '</span></td>'
+                + '<td data-label="Company">' + escapeText(user.company) + '</td>'
+                + '<td data-label="Status"><span class="company-status' + inactiveClass + '">' + escapeText(user.status_label) + '</span></td>'
+                + '<td data-label="Created Date">' + escapeText(user.created_date) + '</td>'
+                + '<td data-label="Actions"><div class="company-actions"><button class="company-action user-action" data-user-id="' + user.id + '" data-user-action="view" type="button">View</button><button class="company-action edit user-action" data-user-id="' + user.id + '" data-user-action="edit" type="button">Edit</button></div></td>'
                 + '</tr>';
         }).join('');
 

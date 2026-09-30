@@ -210,11 +210,213 @@ body.activity-modal-open {
 }
 
 @media (max-width: 760px) {
-    .activity-table {
-        min-width: 720px;
+    .activity-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .activity-heading .primary-button {
+        width: 100%;
+    }
+
+    .activity-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .activity-stat {
+        min-width: 0;
+        min-height: 86px;
+        padding: 12px 10px;
+    }
+
+    .activity-stat .type-name {
+        font-size: 14px;
+        line-height: 1.25;
+    }
+
+    .activity-filters {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 7px;
+    }
+
+    .activity-filters select {
+        width: 100%;
+        min-height: 40px;
+    }
+
+    .activity-table-card {
+        border: 0;
+        background: transparent;
+        overflow: visible;
     }
 
     .company-table-scroll {
-        overflow-x: auto;
+        overflow: visible;
+    }
+
+    .activity-table {
+        display: block;
+        min-width: 0;
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .activity-table thead {
+        display: none;
+    }
+
+    .activity-table tbody {
+        display: grid;
+        gap: 12px;
+    }
+
+    .activity-table tr {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 0 14px;
+        padding: 16px;
+        border: 1px solid #e6edf5;
+        border-radius: 12px;
+        background: #ffffffd9;
+        box-shadow: 0 6px 18px #31547608;
+    }
+
+    .activity-table td {
+        display: grid;
+        grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
+        align-items: start;
+        gap: 12px;
+        min-width: 0;
+        height: auto;
+        padding: 10px 0;
+        border: 0;
+        color: #20314a;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .activity-table td::before {
+        content: attr(data-label);
+        color: #72839a;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.35;
+        text-transform: uppercase;
+    }
+
+    .activity-table td:first-child {
+        grid-column: 1;
+        grid-row: 1;
+        display: flex;
+        justify-content: center;
+        align-self: start;
+        padding-top: 3px;
+        color: #72839a;
+    }
+
+    .activity-table td:first-child::before,
+    .activity-table td:nth-child(2)::before {
+        display: none;
+    }
+
+    .activity-table td:nth-child(2) {
+        grid-column: 2;
+        grid-row: 1;
+        display: block;
+        padding-top: 0;
+    }
+
+    .activity-table td:nth-child(n+3) {
+        grid-column: 1 / -1;
+        border-top: 1px solid #eef3f8;
+    }
+
+    .activity-table td:nth-child(4),
+    .activity-table td:nth-child(5),
+    .activity-table td:nth-child(6) {
+        border-top: 0;
+    }
+
+    .activity-table td:nth-child(3) {
+        line-height: 1.45;
+    }
+
+    .activity-table td:nth-child(4),
+    .activity-table td:nth-child(5),
+    .activity-table td:nth-child(6),
+    .activity-table td:last-child {
+        align-items: center;
+    }
+
+    .activity-table td:nth-child(4) > span,
+    .activity-table td:nth-child(5) > span,
+    .activity-table td:nth-child(6) {
+        justify-self: end;
+        text-align: right;
+    }
+
+    .activity-table td:last-child {
+        display: grid;
+        grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
+        justify-content: flex-end;
+        padding-top: 11px;
+        border-top: 1px solid #eef3f8;
+    }
+
+    .activity-table td:last-child::before {
+        margin-right: 0;
+    }
+
+    .activity-name {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr);
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        line-height: 1.35;
+    }
+
+    .activity-icon {
+        width: 42px;
+        height: 42px;
+        margin-top: 0 !important;
+    }
+
+    .activity-actions {
+        justify-content: flex-end;
+        justify-self: end;
+    }
+
+    .activity-action {
+        width: 37px;
+        height: 37px;
+    }
+
+    .activity-table-card .company-footer {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 16px 0 0;
+        border-top: 0;
+    }
+
+    .activity-table-card .page-size {
+        justify-content: center;
+    }
+
+    .activity-table-card .company-count {
+        text-align: center;
+    }
+
+    .activity-form-card {
+        width: min(560px, calc(100vw - 20px));
+        max-height: calc(100vh - 24px);
+    }
+
+    .activity-form-actions {
+        flex-direction: column;
     }
 }

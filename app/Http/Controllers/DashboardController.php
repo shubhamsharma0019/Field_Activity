@@ -326,7 +326,7 @@ class DashboardController extends Controller
 
         return $items
             ->sortByDesc('created_at')
-            ->take(8)
+            ->take(5)
             ->values()
             ->toArray();
     }

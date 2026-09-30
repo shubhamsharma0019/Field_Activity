@@ -63,18 +63,18 @@
 
         rows.innerHTML = projectsForPage.map(function (project, index) {
             return '<tr>'
-                + '<td><input type="checkbox" aria-label="Select ' + escapeText(project.name) + '"></td>'
-                + '<td>' + (startIndex + index + 1) + '</td>'
-                + '<td><span class="project-name"><img class="project-thumb" src="/images/admin-construction.jpg" alt=""><span>' + escapeText(project.name) + '<small>' + escapeText(project.project_code) + '</small></span></span></td>'
-                + '<td>' + escapeText(project.project_type_label) + '</td>'
-                + '<td>' + escapeText(project.company) + '</td>'
-                + '<td>' + escapeText(project.location) + '</td>'
-                + '<td>' + escapeText(project.start_date_label) + '</td>'
-                + '<td>' + escapeText(project.end_date_label) + '</td>'
-                + '<td><span class="project-status ' + getStatusClass(project.status) + '">' + escapeText(project.status_label) + '</span></td>'
-                + '<td><span class="progress-wrap"><span class="progress-bar ' + getProgressClass(Number(project.progress || 0)) + '"><span style="width:' + Number(project.progress || 0) + '%"></span></span>' + Number(project.progress || 0) + '%</span><small class="progress-meta">' + Number(project.approved || 0) + '/' + Number(project.target || 0) + ' approved</small></td>'
-                + '<td><span class="worker-total"><svg class="icon"><use href="#users"/></svg>' + Number(project.workers_count || 0) + '</span></td>'
-                + '<td><div class="company-actions"><button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="view">View</button><button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="edit">Edit</button></div></td>'
+                + '<td data-label="Select"><input type="checkbox" aria-label="Select ' + escapeText(project.name) + '"></td>'
+                + '<td data-label="#">' + (startIndex + index + 1) + '</td>'
+                + '<td data-label="Project Name"><span class="project-name"><img class="project-thumb" src="/images/admin-construction.jpg" alt=""><span>' + escapeText(project.name) + '<small>' + escapeText(project.project_code) + '</small></span></span></td>'
+                + '<td data-label="Type">' + escapeText(project.project_type_label) + '</td>'
+                + '<td data-label="Company">' + escapeText(project.company) + '</td>'
+                + '<td data-label="Location">' + escapeText(project.location) + '</td>'
+                + '<td data-label="Start Date">' + escapeText(project.start_date_label) + '</td>'
+                + '<td data-label="End Date">' + escapeText(project.end_date_label) + '</td>'
+                + '<td data-label="Status"><span class="project-status ' + getStatusClass(project.status) + '">' + escapeText(project.status_label) + '</span></td>'
+                + '<td data-label="Progress"><span class="progress-wrap"><span class="progress-bar ' + getProgressClass(Number(project.progress || 0)) + '"><span style="width:' + Number(project.progress || 0) + '%"></span></span>' + Number(project.progress || 0) + '%</span><small class="progress-meta">' + Number(project.approved || 0) + '/' + Number(project.target || 0) + ' approved</small></td>'
+                + '<td data-label="Workers"><span class="worker-total"><svg class="icon"><use href="#users"/></svg>' + Number(project.workers_count || 0) + '</span></td>'
+                + '<td data-label="Actions"><div class="company-actions"><button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="view">View</button><button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="edit">Edit</button></div></td>'
                 + '</tr>';
         }).join('');
 
