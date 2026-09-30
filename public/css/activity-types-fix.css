@@ -67,6 +67,29 @@
     overflow-wrap: break-word;
 }
 
+.activity-table td:nth-child(3) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+    padding-right: 20px;
+}
+
+.activity-table th:nth-child(4),
+.activity-table td:nth-child(4) {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.activity-table .mode-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px;
+    min-height: 32px;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
 .activity-name {
     align-items: flex-start;
     min-width: 0;
@@ -195,3 +218,56 @@
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 760px) {
+    .activity-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .activity-stat { min-width: 0; flex-wrap: wrap; padding: 14px; gap: 10px; }
+    .activity-stat > span { flex-shrink: 0; }
+    .activity-stat > div { min-width: 0; overflow-wrap: anywhere; }
+    .activity-stat .type-name { font-size: 16px; }
+    .activity-layout { grid-template-columns: minmax(0, 1fr); }
+    .activity-filters { grid-template-columns: minmax(0, 1fr); padding: 0 0 14px; }
+    .activity-filters .company-search { min-width: 0; }
+    .activity-filters .company-search .icon { flex-shrink: 0; }
+    .activity-filters .company-search input { min-width: 0; min-height: 44px; font-size: 16px; }
+    .activity-filters select { min-width: 0; min-height: 44px; font-size: 16px; }
+    .activity-table-card { background: transparent; border: 0; overflow: visible; }
+    .activity-table-card .company-table-scroll { overflow: visible; }
+    .activity-table, .activity-table tbody { display: block; width: 100%; min-width: 0; }
+    .activity-table thead { display: none; }
+    .activity-table tbody tr { display: block; padding: 16px; margin-bottom: 14px; border: 1px solid #e2eaf4; border-radius: 14px; background: #fff; }
+    .activity-table tbody tr[hidden] { display: none; }
+    .activity-table tbody td { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 10px; align-items: center; height: auto; min-width: 0; padding: 10px 0; border: 0; border-bottom: 1px solid #edf2f7; white-space: normal; overflow-wrap: anywhere; font-size: 13px; text-align: left; }
+    .activity-table td::before { content: attr(data-label); color: #718299; }
+    .activity-table td:first-child { display: none; }
+    .activity-table td:nth-child(2) { display: block; padding: 0 0 14px; font-size: 16px; }
+    .activity-table td:nth-child(2)::before { display: none; }
+    .activity-table .activity-name { align-items: center; }
+    .activity-table .activity-icon { margin: 0; }
+    .activity-table .mode-badge { box-sizing: border-box; width: auto; max-width: 100%; justify-self: start; white-space: normal; font-size: 12px; }
+    .activity-table .activity-status { justify-self: start; }
+    .activity-table td:last-child { border: 0; padding-bottom: 0; }
+    .activity-actions { justify-content: flex-end; }
+    .activity-action { width: 44px; height: 44px; }
+    .activity-table-card .company-footer { flex-wrap: wrap; padding: 12px 4px; }
+    .activity-form-card { scroll-margin-top: 16px; }
+    .activity-form-card form, .activity-form-card fieldset { min-width: 0; }
+    .activity-form-card input[type=text], .activity-form-card textarea { font-size: 16px; }
+    .activity-form-actions { flex-wrap: wrap; }
+    .activity-form-actions > button { min-height: 44px; flex: 1 1 140px; }
+}
+
+.activity-layout.activity-list-only { grid-template-columns: minmax(0, 1fr); }
+.activity-form-card.activity-create-page { position: static; width: 100%; max-width: 820px; margin-inline: auto; }
+.activity-create-page .form-heading { padding: 22px; }
+.activity-create-page form { padding: 24px; gap: 22px; }
+.activity-create-page fieldset { min-width: 0; }
+.activity-create-page fieldset label { padding: 12px; border: 1px solid #e2eaf4; border-radius: 8px; }
+.activity-create-errors { margin-bottom: 18px; padding: 12px 18px; border-radius: 10px; background: #fff1f2; color: #be123c; }
+@media (max-width: 760px) {
+    .activity-create-page form { padding: 16px; }
+}
+
+.back-activity-types-button { background: #174ea6; color: #fff; font-weight: 600; box-shadow: 0 4px 12px #174ea626; }
+.back-activity-types-button:hover { background: #123c80; }
+.back-activity-types-button:focus-visible { outline: 3px solid #78aaff; outline-offset: 3px; }

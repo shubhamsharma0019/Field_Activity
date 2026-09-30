@@ -47,6 +47,8 @@
 .assignment-stat p { margin: 4px 0 0; color: #079452; font-size: 11px; }
 
 .assignment-layout { display: grid; grid-template-columns: 1fr; gap: 15px; }
+.assignment-form-card[hidden] { display: none; }
+#assignment-form { scroll-margin-top: 20px; }
 .assignment-table-card, .assignment-form-card { min-width: 0; border: 1px solid #edf2f7; border-radius: 10px; background: #ffffffd9; }
 .assignment-table-card { overflow: hidden; }
 .assignment-filters { display: grid; grid-template-columns: 2fr repeat(4, 1fr) auto; gap: 8px; padding: 7px; }
@@ -310,3 +312,44 @@
     text-align: center;
     color: #607089;
 }
+
+@media (max-width: 760px) {
+    .assignment-heading-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .assignment-heading-actions > a { justify-content: center; min-height: 44px; }
+    .assignment-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .assignment-stat { min-width: 0; flex-wrap: wrap; gap: 10px; padding: 14px; }
+    .assignment-stat > span { flex-shrink: 0; }
+    .assignment-stat > div { min-width: 0; overflow-wrap: anywhere; }
+    .assignment-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0 0 14px; gap: 8px; }
+    .assignment-search { grid-column: 1 / -1; min-width: 0; }
+    .assignment-search .icon { flex-shrink: 0; }
+    .assignment-search input { min-width: 0; font-size: 16px; min-height: 44px; }
+    .assignment-filters select { min-width: 0; width: 100%; font-size: 14px; min-height: 44px; }
+    .assignment-filters > button { grid-column: 1 / -1; min-height: 44px; }
+    .assignment-table-card { overflow: visible; background: transparent; border: 0; }
+    .assignment-table-card .company-table-scroll { overflow: visible; }
+    .assignment-table, .assignment-table tbody { display: block; width: 100%; min-width: 0; }
+    .assignment-table thead { display: none; }
+    .assignment-table tbody tr { display: block; padding: 16px; margin-bottom: 14px; border: 1px solid #e2eaf4; border-radius: 14px; background: #fff; }
+    .assignment-table tbody tr[hidden] { display: none; }
+    .assignment-table tbody td { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 10px; align-items: center; height: auto; min-width: 0; padding: 10px 0; border: 0; border-bottom: 1px solid #edf2f7; white-space: normal; overflow-wrap: anywhere; overflow: visible; font-size: 13px; text-align: left; }
+    .assignment-table td::before { content: attr(data-label); color: #718299; }
+    .assignment-table td:first-child { display: none; }
+    .assignment-table td:nth-child(2) { display: block; padding: 0 0 14px; font-size: 16px; }
+    .assignment-table td:nth-child(2)::before { display: none; }
+    .assignment-table td:nth-child(4) small { grid-column: 2; margin: 0; }
+    .assignment-table .activity-badge, .assignment-table .mode-badge, .assignment-table .assignment-status { justify-self: start; max-width: 100%; white-space: normal; }
+    .assignment-progress { min-width: 0; flex-wrap: wrap; }
+    .assignment-table td:last-child { border: 0; padding: 14px 0 0; white-space: normal; }
+    .assignment-table .assignment-action { justify-self: end; width: 44px; height: 44px; }
+    .assignment-table-card .company-footer { flex-wrap: wrap; gap: 14px; padding: 12px 4px; }
+    .assignment-table-card .company-count { white-space: normal; }
+    .assignment-form-card form { grid-template-columns: minmax(0, 1fr); padding: 16px; }
+    .assignment-form-card label { min-width: 0; }
+    .assignment-form-card input, .assignment-form-card select, .assignment-form-card textarea { box-sizing: border-box; min-width: 0; font-size: 16px; }
+    .assignment-actions { flex-wrap: wrap; }
+    .assignment-actions > * { flex: 1 1 140px; min-height: 44px; }
+}
+.back-assignments-button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 13px 18px; border-radius: 8px; background: #174ea6; color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px #174ea626; }
+.back-assignments-button:hover { background: #123c80; }
+.back-assignments-button:focus-visible { outline: 3px solid #78aaff; outline-offset: 3px; }

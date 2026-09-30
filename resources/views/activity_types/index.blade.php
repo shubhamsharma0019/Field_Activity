@@ -19,7 +19,7 @@
             <h1>Activity Types</h1>
             <p>Create and manage different types of field activities for assignments.</p>
         </div>
-        <button class="primary-button" id="open-activity-form" type="button"><span>+</span>Add New Activity Type</button>
+        <a class="primary-button" href="{{ route('web.activity-types.create') }}"><span>+</span>Add New Activity Type</a>
     </div>
 
     @if (session('status'))
@@ -55,7 +55,7 @@
         </article>
     </div>
 
-    <div class="activity-layout">
+    <div class="activity-layout activity-list-only">
         <section class="activity-table-card">
             <div class="activity-filters">
                 <label class="company-search">
@@ -85,18 +85,18 @@
                     <tbody id="activity-rows">
                         @foreach ($activities as $activity)
                             <tr data-status="{{ $activity['status'] }}" data-search="{{ strtolower($activity['name'].' '.$activity['description'].' '.$activity['mode_label'].' '.$activity['status_label']) }}">
-                                <td>{{ $loop->iteration }}</td>
-                                <td>
+                                <td data-label="Number">{{ $loop->iteration }}</td>
+                                <td data-label="Activity Type">
                                     <span class="activity-name">
                                         <span class="activity-icon"><svg class="icon"><use href="#{{ $activity['icon'] }}"/></svg></span>
                                         {{ $activity['name'] }}
                                     </span>
                                 </td>
-                                <td>{{ $activity['description'] }}</td>
-                                <td><span class="mode-badge {{ $activity['activity_mode'] }}">{{ $activity['mode_label'] }}</span></td>
-                                <td><span class="activity-status {{ $activity['status'] === 'inactive' ? 'inactive' : '' }}">{{ $activity['status_label'] }}</span></td>
-                                <td>{{ $activity['assignments_count'] }}</td>
-                                <td>
+                                <td data-label="Description">{{ $activity['description'] }}</td>
+                                <td data-label="Default Mode"><span class="mode-badge {{ $activity['activity_mode'] }}">{{ $activity['mode_label'] }}</span></td>
+                                <td data-label="Status"><span class="activity-status {{ $activity['status'] === 'inactive' ? 'inactive' : '' }}">{{ $activity['status_label'] }}</span></td>
+                                <td data-label="Total Assignments">{{ $activity['assignments_count'] }}</td>
+                                <td data-label="Actions">
                                     <div class="activity-actions">
                                         <button class="activity-action" type="button" data-detail="{{ $activity['name'] }}" data-description="Mode: {{ $activity['mode_label'] }}. Tracking required: {{ $activity['tracking_required'] ? 'Yes' : 'No' }}. Used in {{ $activity['assignments_count'] }} project activities." aria-label="View {{ $activity['name'] }}">
                                             <svg class="icon"><use href="#eye"/></svg>
@@ -116,39 +116,7 @@
             </div>
         </section>
 
-        <aside id="activity-form-panel" class="activity-form-card" @if (! $errors->any()) hidden @endif>
-            <div class="form-heading">
-                <h2>Add New Activity Type</h2>
-                <button id="close-activity-form" type="button" aria-label="Close activity type form">x</button>
-            </div>
-            <form id="activity-form" method="POST" action="{{ route('web.activity-types.store') }}">
-                @csrf
-                <label>Activity Name <em>*</em>
-                    <input id="activity-name" name="name" type="text" required maxlength="100" value="{{ old('name') }}" placeholder="Enter activity type name">
-                </label>
-                <label>Description
-                    <textarea id="activity-description" maxlength="500" placeholder="Optional display note for admin planning">{{ old('description') }}</textarea>
-                    <small id="activity-description-count">0/500</small>
-                </label>
-                <fieldset>
-                    <legend>Default Activity Mode <em>*</em></legend>
-                    <label><input type="radio" name="activity_mode" value="single_submission" @checked(old('activity_mode', 'single_submission') === 'single_submission')> Single Submission <small>Worker submits one time with photo and location</small></label>
-                    <label><input type="radio" name="activity_mode" value="start_end" @checked(old('activity_mode') === 'start_end')> Start - End <small>Worker starts activity and ends it with time tracking</small></label>
-                    <label><input type="radio" name="activity_mode" value="continuous_tracking" @checked(old('activity_mode') === 'continuous_tracking')> Continuous Tracking <small>Real-time location tracking during activity</small></label>
-                </fieldset>
-                <label class="switch-label">Tracking Required
-                    <span><input id="tracking-required" name="tracking_required" value="1" type="checkbox" @checked(old('tracking_required'))><i></i> Required</span>
-                </label>
-                <label class="switch-label">Status <em>*</em>
-                    <input name="status" value="inactive" type="hidden">
-                    <span><input id="activity-active" name="status" value="active" type="checkbox" @checked(old('status', 'active') === 'active')><i></i> Active</span>
-                </label>
-                <div class="activity-form-actions">
-                    <button id="cancel-activity" class="secondary-button" type="button">Cancel</button>
-                    <button class="primary-button" type="submit">Create Activity Type</button>
-                </div>
-            </form>
-        </aside>
+
     </div>
 @endsection
 

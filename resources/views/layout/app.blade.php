@@ -118,7 +118,7 @@
             }
 
             .topbar {
-                height: 33px;
+                height: 56px;
                 padding: 0 7px;
             }
 
@@ -207,36 +207,13 @@
             @endif
         @endforeach
     </nav>
-    <div class="sidebar-footer">
-        <svg class="icon" aria-hidden="true"><use href="#users"/></svg>
-        @if (request()->routeIs('web.companies.*'))
-            <p><strong>Manage<br>Companies</strong><br><small>Create, edit and<br>track companies</small></p>
-        @elseif (request()->routeIs('web.users.*'))
-            <p><strong>Manage<br>Field Workforce</strong><br><small>Add users, assign<br>projects and track</small></p>
-        @elseif (request()->routeIs('web.projects.*'))
-            <p><strong>Manage<br>Projects</strong><br><small>Create, assign and<br>track activities</small></p>
-        @elseif (request()->routeIs('web.activity-types.*'))
-            <p><strong>Manage<br>Activity Types</strong><br><small>Define and configure<br>field activities</small></p>
-        @elseif (request()->routeIs('web.assignments.*'))
-            <p><strong>Assign &amp;<br>Track Field Work</strong><br><small>Manage your field<br>operations efficiently</small></p>
-        @elseif (request()->routeIs('web.submissions.*'))
-            <p><strong>Review Field<br>Submissions</strong><br><small>Verify photos, locations<br>and activity proofs</small></p>
-        @elseif (request()->routeIs('web.activity-sessions.*'))
-            <p><strong>Live Track<br>Field Workers</strong><br><small>Monitor real-time location<br>and activity progress</small></p>
-        @elseif (request()->routeIs('web.activity-updates.*'))
-            <p><strong>Track Your<br>Field Operations</strong><br><small>Real-time updates, better<br>visibility and productivity.</small></p>
-        @elseif (request()->routeIs('web.reports.*'))
-            <p><strong>Generate<br>Detailed Reports</strong><br><small>Analyze field performance<br>and get insights</small></p>
-        @elseif (request()->routeIs('web.settings.*'))
-            <p><strong>System Settings</strong><br><small>Configure system preferences<br>and manage your platform.</small></p>
-        @else
-            <p><strong>Track<br>Manage</strong><br>Field Activities</p>
-        @endif
-    </div>
 </aside>
     <button class="sidebar-overlay" id="sidebar-overlay" aria-label="Close navigation"></button>
     <div class="workspace">
         <header class="topbar">
+    <button id="menu-toggle" class="mobile-menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
     <label class="search-box" for="dashboard-search">
         <svg class="icon" aria-hidden="true"><use href="#search"/></svg>
         <input id="dashboard-search" type="search" placeholder="Search anything..." aria-label="Search current page">

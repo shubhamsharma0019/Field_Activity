@@ -12,6 +12,48 @@ use Illuminate\Support\Str;
 
 class ProjectPageController extends Controller
 {
+    private function authorizeProjectManagement(Request $request): void
+    {
+        abort_unless($request->user()->status === 'active' && in_array($request->user()->role, ['admin', 'super_admin'], true), 403);
+    }
+
+    public function show(Request $request, Project $project): View
+    {
+        $this->authorizeProjectManagement($request);
+        $project->load('company', 'creator')->loadCount(['activities', 'assignments']);
+        $target = (int) $project->assignments()->sum('target_quantity');
+        $completed = (int) $project->assignments()->sum('completed_quantity');
+        $workers = $project->assignments()->distinct()->count('worker_id');
+
+        return view('projects.show', compact('project', 'target', 'completed', 'workers'));
+    }
+
+    public function edit(Request $request, Project $project): View
+    {
+        $this->authorizeProjectManagement($request);
+        $project->load('company');
+
+        return view('projects.edit', compact('project'));
+    }
+
+    public function update(Request $request, Project $project): RedirectResponse
+    {
+        $this->authorizeProjectManagement($request);
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:150'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'area' => ['required', 'string', 'max:150'],
+            'city' => ['required', 'string', 'max:100'],
+            'state' => ['required', 'string', 'max:100'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'status' => ['required', 'in:active,on_hold,completed,draft'],
+        ]);
+        $project->update($validated);
+
+        return redirect()->route('web.projects.show', $project)->with('success', 'Project updated successfully.');
+    }
+
     public function index(): View
     {
         $monthStart = now()->startOfMonth();
@@ -34,6 +76,8 @@ class ProjectPageController extends Controller
 
                 return [
                     'id' => $project->id,
+                    'show_url' => route('web.projects.show', $project),
+                    'edit_url' => route('web.projects.edit', $project),
                     'project_code' => $project->project_code,
                     'name' => $project->name,
                     'description' => $project->description,
@@ -134,7 +178,7 @@ class ProjectPageController extends Controller
         $number = Project::count() + 1;
 
         do {
-            $code = 'PRJ' . str_pad((string) $number, 4, '0', STR_PAD_LEFT);
+            $code = 'PRJ'.str_pad((string) $number, 4, '0', STR_PAD_LEFT);
             $number++;
         } while (Project::where('project_code', $code)->exists());
 

@@ -8,7 +8,7 @@
 
 @section('content')
     <nav class="breadcrumbs"><a href="{{ route('web.dashboard') }}"><svg class="icon"><use href="#home"/></svg>Dashboard</a><span>&rsaquo;</span><a href="{{ route('web.assignments.index') }}">Assignments</a><span>&rsaquo;</span><span>Add Project Activity</span></nav>
-    <div class="page-heading assignments-heading"><div><h1>Add Project Activity</h1><p>Create work inside a project before assigning it to a worker.</p></div></div>
+    <div class="page-heading assignments-heading"><div><h1>Add Project Activity</h1><p>Create work inside a project before assigning it to a worker.</p></div><a class="back-assignments-button" href="{{ route('web.assignments.index') }}">&larr; Back to Assignments</a></div>
 
     @if ($errors->any())
         <div class="company-toast error">{{ $errors->first() }}</div>

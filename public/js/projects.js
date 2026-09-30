@@ -63,18 +63,22 @@
 
         rows.innerHTML = projectsForPage.map(function (project, index) {
             return '<tr>'
-                + '<td><input type="checkbox" aria-label="Select ' + escapeText(project.name) + '"></td>'
-                + '<td>' + (startIndex + index + 1) + '</td>'
-                + '<td><span class="project-name"><img class="project-thumb" src="/images/admin-construction.jpg" alt=""><span>' + escapeText(project.name) + '<small>' + escapeText(project.project_code) + '</small></span></span></td>'
-                + '<td>' + escapeText(project.project_type_label) + '</td>'
-                + '<td>' + escapeText(project.company) + '</td>'
-                + '<td>' + escapeText(project.location) + '</td>'
-                + '<td>' + escapeText(project.start_date_label) + '</td>'
-                + '<td>' + escapeText(project.end_date_label) + '</td>'
-                + '<td><span class="project-status ' + getStatusClass(project.status) + '">' + escapeText(project.status_label) + '</span></td>'
-                + '<td><span class="progress-wrap"><span class="progress-bar ' + getProgressClass(Number(project.progress || 0)) + '"><span style="width:' + Number(project.progress || 0) + '%"></span></span>' + Number(project.progress || 0) + '%</span><small class="progress-meta">' + Number(project.approved || 0) + '/' + Number(project.target || 0) + ' approved</small></td>'
-                + '<td><span class="worker-total"><svg class="icon"><use href="#users"/></svg>' + Number(project.workers_count || 0) + '</span></td>'
-                + '<td><div class="company-actions"><button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="view">View</button><button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="edit">Edit</button></div></td>'
+                + '<td data-label="Select"><input type="checkbox" aria-label="Select ' + escapeText(project.name) + '"></td>'
+                + '<td data-label="Number">' + (startIndex + index + 1) + '</td>'
+                + '<td data-label="Project"><span class="project-name"><img class="project-thumb" src="/images/admin-construction.jpg" alt=""><span>' + escapeText(project.name) + '<small>' + escapeText(project.project_code) + '</small></span></span></td>'
+                + '<td data-label="Type">' + escapeText(project.project_type_label) + '</td>'
+                + '<td data-label="Company">' + escapeText(project.company) + '</td>'
+                + '<td data-label="Location">' + escapeText(project.location) + '</td>'
+                + '<td data-label="Start Date">' + escapeText(project.start_date_label) + '</td>'
+                + '<td data-label="End Date">' + escapeText(project.end_date_label) + '</td>'
+                + '<td data-label="Status"><span class="project-status ' + getStatusClass(project.status) + '">' + escapeText(project.status_label) + '</span></td>'
+                + '<td data-label="Progress"><span class="progress-wrap"><span class="progress-bar ' + getProgressClass(Number(project.progress || 0)) + '"><span style="width:' + Number(project.progress || 0) + '%"></span></span>' + Number(project.progress || 0) + '%</span><small class="progress-meta">' + Number(project.approved || 0) + '/' + Number(project.target || 0) + ' approved</small></td>'
+                + '<td data-label="Workers"><span class="worker-total"><svg class="icon"><use href="#users"/></svg>' + Number(project.workers_count || 0) + '</span></td>'
+                + '<td data-label="Actions"><div class="company-actions">'
+                + '<button class="company-action" type="button" data-project-id="' + project.id + '" data-project-action="view" aria-label="View project" title="View project"><svg class="icon" aria-hidden="true"><use href="#eye"/></svg></button>'
+                + '<button class="company-action edit" type="button" data-project-id="' + project.id + '" data-project-action="edit" aria-label="Edit project" title="Edit project"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14Zm-1 3h18"/></svg></button>'
+                + '<button class="company-action delete" type="button" data-project-id="' + project.id + '" data-project-action="delete" aria-label="Delete project" title="Delete project"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></svg></button>'
+                + '</div></td>'
                 + '</tr>';
         }).join('');
 
@@ -149,6 +153,17 @@
         });
         if (!project) return;
 
+        if (button.dataset.projectAction === 'view' || button.dataset.projectAction === 'edit') {
+            window.location.assign(button.dataset.projectAction === 'edit' ? project.edit_url : project.show_url);
+            return;
+        }
+
+        if (button.dataset.projectAction === 'delete') {
+            document.getElementById('delete-project-message').textContent = 'Are you sure you want to delete ' + project.name + '? A completed deletion cannot be undone.';
+            document.getElementById('delete-project-dialog').showModal();
+            return;
+        }
+
         document.getElementById('project-dialog-title').textContent = project.name;
         document.getElementById('project-dialog-text').textContent = [
             'Code: ' + project.project_code,
@@ -178,5 +193,13 @@
         document.getElementById('project-dialog').close();
     });
 
+    const deleteDialog = document.getElementById('delete-project-dialog');
+    document.getElementById('cancel-project-delete').addEventListener('click', () => deleteDialog.close());
+    document.getElementById('confirm-project-delete').addEventListener('click', () => {
+        deleteDialog.close();
+        document.getElementById('project-dialog-title').textContent = 'Project deletion';
+        document.getElementById('project-dialog-text').textContent = 'Project deletion is not connected yet. No project has been deleted.';
+        document.getElementById('project-dialog').showModal();
+    });
     renderProjects();
 })();

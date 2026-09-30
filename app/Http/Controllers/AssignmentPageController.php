@@ -79,6 +79,27 @@ class AssignmentPageController extends Controller
         ]);
     }
 
+    public function show(Request $request, ProjectAssignment $assignment): View
+    {
+        abort_unless($request->user()->status === 'active' && in_array($request->user()->role, ['admin', 'super_admin'], true), 403);
+        $assignment->load(['project.company', 'projectActivity.activityType', 'worker']);
+
+        return view('assignments.show', [
+            'details' => $this->assignmentRow($assignment),
+            'assignment' => $assignment,
+        ]);
+    }
+
+    public function create(): View
+    {
+        return view('assignments.create', [
+            'companies' => Company::orderBy('name')->get(['id', 'name']),
+            'projects' => Project::orderBy('name')->get(['id', 'name', 'company_id']),
+            'activities' => ProjectActivity::with('activityType')->whereIn('status', ['pending', 'active'])->orderBy('name')->get(),
+            'workers' => User::where('role', 'worker')->where('status', 'active')->orderBy('name')->get(['id', 'name', 'mobile', 'company_id']),
+        ]);
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -151,14 +172,14 @@ class AssignmentPageController extends Controller
 
         return [
             'id' => $assignment->id,
-            'code' => 'ASG' . str_pad((string) $assignment->id, 3, '0', STR_PAD_LEFT),
-            'title' => $assignment->projectActivity?->name ?? 'Assignment #' . $assignment->id,
+            'code' => 'ASG'.str_pad((string) $assignment->id, 3, '0', STR_PAD_LEFT),
+            'title' => $assignment->projectActivity?->name ?? 'Assignment #'.$assignment->id,
             'project' => $assignment->project?->name ?? 'Internal Project',
             'project_id' => $assignment->project_id,
             'company' => $assignment->project?->company?->name ?? 'Internal',
             'company_id' => $assignment->project?->company_id,
             'worker' => $assignment->worker?->name ?? 'Unassigned Worker',
-            'worker_code' => $assignment->worker ? 'USR' . str_pad((string) $assignment->worker->id, 3, '0', STR_PAD_LEFT) : 'USR---',
+            'worker_code' => $assignment->worker ? 'USR'.str_pad((string) $assignment->worker->id, 3, '0', STR_PAD_LEFT) : 'USR---',
             'activity_type' => $activityType?->name ?? 'Activity',
             'activity_type_id' => $activityType?->id,
             'mode' => $this->modeLabel((string) ($activityType?->activity_mode ?? 'single_submission')),

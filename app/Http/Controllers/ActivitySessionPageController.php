@@ -49,8 +49,17 @@ class ActivitySessionPageController extends Controller
         ]);
     }
 
+    public function show(Request $request, ActivitySession $session): View
+    {
+        abort_unless($request->user()->status === 'active' && in_array($request->user()->role, ['admin', 'super_admin'], true), 403);
+        $session->load(['assignment.project.company', 'assignment.projectActivity.activityType', 'worker', 'reviewer']);
+
+        return view('activity_sessions.show', ['session' => $this->row($session)]);
+    }
+
     public function review(Request $request, ActivitySession $session): RedirectResponse
     {
+        abort_unless($request->user()->status === 'active' && in_array($request->user()->role, ['admin', 'super_admin'], true), 403);
         $validated = $request->validate([
             'status' => ['required', Rule::in(['approved', 'rejected'])],
             'rejection_reason' => ['nullable', 'string', 'max:500'],
@@ -66,8 +75,8 @@ class ActivitySessionPageController extends Controller
         ]);
 
         return redirect()
-            ->route('web.activity-sessions.index')
-            ->with('status', 'Session ' . ($validated['status'] === 'approved' ? 'approved' : 'rejected') . ' successfully.');
+            ->route('web.activity-sessions.show', $session)
+            ->with('status', 'Session '.($validated['status'] === 'approved' ? 'approved' : 'rejected').' successfully.');
     }
 
     private function row(ActivitySession $session): array
@@ -82,12 +91,12 @@ class ActivitySessionPageController extends Controller
 
         return [
             'id' => $session->id,
-            'code' => 'SES' . str_pad((string) $session->id, 4, '0', STR_PAD_LEFT),
+            'code' => 'SES'.str_pad((string) $session->id, 4, '0', STR_PAD_LEFT),
             'worker' => $worker?->name ?? 'Worker',
-            'worker_code' => $worker ? 'USR' . str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT) : 'USR---',
+            'worker_code' => $worker ? 'USR'.str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT) : 'USR---',
             'worker_mobile' => $worker?->mobile ?? 'N/A',
             'worker_initials' => $this->initials($worker?->name ?? 'Worker'),
-            'assignment' => $activity?->name ?? 'Assignment #' . $assignment?->id,
+            'assignment' => $activity?->name ?? 'Assignment #'.$assignment?->id,
             'project' => $project?->name ?? 'Internal Project',
             'project_id' => $project?->id,
             'company' => $project?->company?->name ?? 'Internal',
@@ -100,16 +109,16 @@ class ActivitySessionPageController extends Controller
             'status' => $session->status,
             'status_label' => $this->statusLabel($session->status),
             'location' => $location,
-            'start_gps' => $session->start_latitude . ', ' . $session->start_longitude,
-            'end_gps' => $session->end_latitude && $session->end_longitude ? $session->end_latitude . ', ' . $session->end_longitude : 'Not completed',
-            'start_image_url' => $session->start_image_url ?: asset('images/admin-construction.jpg'),
-            'end_image_url' => $session->end_image_url ?: asset('images/admin-construction.jpg'),
+            'start_gps' => $session->start_latitude.', '.$session->start_longitude,
+            'end_gps' => $session->end_latitude && $session->end_longitude ? $session->end_latitude.', '.$session->end_longitude : 'Not completed',
+            'start_image_url' => $session->start_image_url ?? '',
+            'end_image_url' => $session->end_image_url ?? '',
             'remark' => $session->remark ?: 'No remark added.',
             'reviewer' => $session->reviewer?->name,
             'reviewed_at' => $session->reviewed_at?->format('d M Y h:i A'),
             'rejection_reason' => $session->rejection_reason,
             'search' => Str::lower(implode(' ', [
-                'SES' . str_pad((string) $session->id, 4, '0', STR_PAD_LEFT),
+                'SES'.str_pad((string) $session->id, 4, '0', STR_PAD_LEFT),
                 $worker?->name,
                 $activity?->name,
                 $project?->name,
@@ -122,19 +131,19 @@ class ActivitySessionPageController extends Controller
     {
         $minutes = $session->actual_duration_minutes;
 
-        if (!$minutes && $session->started_at) {
+        if (! $minutes && $session->started_at) {
             $end = $session->completed_at ?? now();
             $minutes = max(0, $session->started_at->diffInMinutes($end));
         }
 
-        if (!$minutes) {
+        if (! $minutes) {
             return '0m';
         }
 
         $hours = intdiv($minutes, 60);
         $remaining = $minutes % 60;
 
-        return trim(($hours ? $hours . 'h ' : '') . $remaining . 'm');
+        return trim(($hours ? $hours.'h ' : '').$remaining.'m');
     }
 
     private function location(ActivitySession $session): string
@@ -142,7 +151,7 @@ class ActivitySessionPageController extends Controller
         $project = $session->assignment?->project;
         $parts = array_filter([$project?->area, $project?->city, $project?->state]);
 
-        return $parts ? implode(', ', $parts) : $session->start_latitude . ', ' . $session->start_longitude;
+        return $parts ? implode(', ', $parts) : $session->start_latitude.', '.$session->start_longitude;
     }
 
     private function statusLabel(string $status): string

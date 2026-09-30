@@ -54,7 +54,7 @@
     <div class="user-filters">
         <label class="company-search">
             <svg class="icon" aria-hidden="true"><use href="#search"/></svg>
-            <input id="user-search" type="search" placeholder="Search users by name, email or mobile...">
+            <input id="user-search" type="search" aria-label="Search users by name, email or mobile" placeholder="Search users by name, email or mobile...">
         </label>
 
         <select id="user-role" aria-label="Filter users by role">
@@ -115,6 +115,14 @@
         <p id="user-dialog-text"></p>
     </dialog>
 
+    <dialog id="delete-user-dialog" aria-labelledby="delete-user-title" aria-describedby="delete-user-message">
+        <h2 id="delete-user-title">Delete user?</h2>
+        <p id="delete-user-message"></p>
+        <div class="user-dialog-actions">
+            <button class="secondary-button" id="cancel-user-delete" type="button" autofocus>Cancel</button>
+            <button class="danger-button" id="confirm-user-delete" type="button">Delete</button>
+        </div>
+    </dialog>
     <div class="company-toast" id="user-toast" role="status" hidden></div>
 @endsection
 

@@ -20,7 +20,7 @@
         </div>
         <div class="assignment-heading-actions">
             <a class="secondary-button project-activity-cta" href="{{ route('web.project-activities.create') }}">Add Project Activity</a>
-            <button class="primary-button" id="assignment-form-button" type="button"><span>+</span>Create New Assignment</button>
+            <a class="primary-button" href="{{ route('web.assignments.create') }}"><span>+</span>Create New Assignment</a>
         </div>
     </div>
 
@@ -57,17 +57,17 @@
                     <tbody id="assignment-rows">
                         @foreach ($assignments as $assignment)
                             <tr data-search="{{ $assignment['search'] }}" data-company="{{ $assignment['company_id'] ?? 'internal' }}" data-project="{{ $assignment['project_id'] }}" data-activity-type="{{ $assignment['activity_type_id'] }}" data-status="{{ $assignment['status'] }}">
-                                <td>{{ $loop->iteration }}</td>
-                                <td><strong>{{ $assignment['title'] }}</strong><small>{{ $assignment['code'] }}</small></td>
-                                <td>{{ $assignment['project'] }}</td>
-                                <td><strong>{{ $assignment['worker'] }}</strong><small>{{ $assignment['worker_code'] }}</small></td>
-                                <td><span class="activity-badge">{{ $assignment['activity_type'] }}</span></td>
-                                <td><span class="mode-badge">{{ $assignment['mode'] }}</span></td>
-                                <td>{{ $assignment['due_date'] }}</td>
-                                <td><span class="assignment-status {{ str_replace('_', '-', $assignment['status']) }}">{{ $assignment['status_label'] }}</span></td>
-                                <td><span class="assignment-progress"><i><b style="width: {{ $assignment['progress'] }}%"></b></i>{{ $assignment['completed'] }}/{{ $assignment['target'] ?: 0 }}</span></td>
-                                <td class="assignment-actions-cell">
-                                    <button class="assignment-action" type="button" data-detail="{{ $assignment['title'] }}" data-description="Project: {{ $assignment['project'] }}. Worker: {{ $assignment['worker'] }}. Progress: {{ $assignment['completed'] }}/{{ $assignment['target'] ?: 0 }}." aria-label="View {{ $assignment['title'] }}"><svg class="icon"><use href="#eye"/></svg></button>
+                                <td data-label="Number">{{ $loop->iteration }}</td>
+                                <td data-label="Assignment"><strong>{{ $assignment['title'] }}</strong><small>{{ $assignment['code'] }}</small></td>
+                                <td data-label="Project">{{ $assignment['project'] }}</td>
+                                <td data-label="Worker"><strong>{{ $assignment['worker'] }}</strong><small>{{ $assignment['worker_code'] }}</small></td>
+                                <td data-label="Activity Type"><span class="activity-badge">{{ $assignment['activity_type'] }}</span></td>
+                                <td data-label="Mode"><span class="mode-badge">{{ $assignment['mode'] }}</span></td>
+                                <td data-label="Due Date">{{ $assignment['due_date'] }}</td>
+                                <td data-label="Status"><span class="assignment-status {{ str_replace('_', '-', $assignment['status']) }}">{{ $assignment['status_label'] }}</span></td>
+                                <td data-label="Progress"><span class="assignment-progress"><i><b style="width: {{ $assignment['progress'] }}%"></b></i>{{ $assignment['completed'] }}/{{ $assignment['target'] ?: 0 }}</span></td>
+                                <td class="assignment-actions-cell" data-label="Actions">
+                                    <a class="assignment-action" href="{{ route('web.assignments.show', $assignment['id']) }}" aria-label="View {{ $assignment['title'] }}"><svg class="icon"><use href="#eye"/></svg></a>
                                 </td>
                             </tr>
                         @endforeach
@@ -81,22 +81,7 @@
             </div>
         </section>
 
-        <aside id="assignment-form" class="assignment-form-card">
-            <div class="form-heading"><h2>Create New Assignment</h2><button id="close-assignment-form" type="button" aria-label="Close assignment form">x</button></div>
-            <form id="new-assignment-form" method="POST" action="{{ route('web.assignments.store') }}">
-                @csrf
-                <label>Company <em>*</em><select id="form-company"><option value="all">All Companies / Internal</option><option value="internal">Internal Project</option>@foreach ($companies as $company)<option value="{{ $company->id }}">{{ $company->name }}</option>@endforeach</select></label>
-                <label>Project <em>*</em><select id="form-project" name="project_id" required><option value="" selected disabled>Select project</option>@foreach ($projects as $project)<option value="{{ $project->id }}" data-company="{{ $project->company_id ?? 'internal' }}">{{ $project->name }}</option>@endforeach</select></label>
-                <label>Project Activity <em>*</em><select id="form-project-activity" name="project_activity_id" required><option value="" selected disabled>Select project activity</option>@foreach ($activities as $activity)<option value="{{ $activity->id }}" data-project="{{ $activity->project_id }}" data-mode="{{ $activity->activityType?->activity_mode }}" data-tracking="{{ $activity->activityType?->tracking_required ? '1' : '0' }}" data-target="{{ $activity->target_quantity }}">{{ $activity->name }} - {{ $activity->activityType?->name }}</option>@endforeach</select></label>
-                <label>Activity Mode <em>*</em><input id="form-activity-mode" value="Select project activity" readonly></label>
-                <label>Assign to Worker <em>*</em><select id="form-worker" name="worker_id" required><option value="" selected disabled>Select worker</option>@foreach ($workers as $worker)<option value="{{ $worker->id }}" data-company="{{ $worker->company_id ?? 'internal' }}">{{ $worker->name }}{{ $worker->mobile ? ' - '.$worker->mobile : '' }}</option>@endforeach</select></label>
-                <label>Target Quantity<input id="form-target" name="target_quantity" type="number" min="1" placeholder="Use project activity target"></label>
-                <label>Assigned Date <em>*</em><input name="assigned_date" required type="date" value="{{ now()->toDateString() }}"></label>
-                <label class="tracking-field"><input name="tracking_required" value="0" type="hidden"><span><input id="form-tracking" name="tracking_required" value="1" type="checkbox"> Tracking Required</span></label>
-                <label>Description<textarea id="assignment-description" maxlength="500" placeholder="Visible note only; assignment instructions come from project activity."></textarea><small id="assignment-description-count">0/500</small></label>
-                <div class="assignment-actions"><button class="secondary-button" id="cancel-assignment" type="button">Cancel</button><button class="primary-button" type="submit">Create Assignment</button></div>
-            </form>
-        </aside>
+
     </div>
 @endsection
 

@@ -1,14 +1,14 @@
 <?php
 
-use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\ActivitySessionPageController;
 use App\Http\Controllers\ActivityTypePageController;
 use App\Http\Controllers\ActivityUpdatePageController;
+use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AssignmentPageController;
 use App\Http\Controllers\CompanyPageController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProjectPageController;
 use App\Http\Controllers\ProjectActivityPageController;
+use App\Http\Controllers\ProjectPageController;
 use App\Http\Controllers\ReportPageController;
 use App\Http\Controllers\SettingsPageController;
 use App\Http\Controllers\SubmissionPageController;
@@ -39,15 +39,26 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/companies', [CompanyPageController::class, 'store'])->name('web.companies.store');
 
+    Route::get('/companies/{company}', [CompanyPageController::class, 'show'])->name('web.companies.show');
+    Route::get('/companies/{company}/edit', [CompanyPageController::class, 'edit'])->name('web.companies.edit');
+    Route::put('/companies/{company}', [CompanyPageController::class, 'update'])->name('web.companies.update');
+
     Route::get('/users', [UserPageController::class, 'index'])->name('web.users.index');
 
     Route::view('/users/create', 'users.create')->name('web.users.create');
+
+    Route::get('/users/{user}', [UserPageController::class, 'show'])->name('web.users.show');
+    Route::get('/users/{user}/edit', [UserPageController::class, 'edit'])->name('web.users.edit');
+    Route::put('/users/{user}', [UserPageController::class, 'update'])->name('web.users.update');
 
     Route::get('/projects', [ProjectPageController::class, 'index'])->name('web.projects.index');
 
     Route::get('/projects/create', [ProjectPageController::class, 'create'])->name('web.projects.create');
 
     Route::post('/projects', [ProjectPageController::class, 'store'])->name('web.projects.store');
+    Route::get('/projects/{project}', [ProjectPageController::class, 'show'])->name('web.projects.show');
+    Route::get('/projects/{project}/edit', [ProjectPageController::class, 'edit'])->name('web.projects.edit');
+    Route::put('/projects/{project}', [ProjectPageController::class, 'update'])->name('web.projects.update');
 
     Route::get('/activity-types', [ActivityTypePageController::class, 'index'])->name('web.activity-types.index');
 
@@ -59,13 +70,15 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/assignments', [AssignmentPageController::class, 'store'])->name('web.assignments.store');
 
-    Route::view('/assignments/create', 'assignments.create')->name('web.assignments.create');
+    Route::get('/assignments/create', [AssignmentPageController::class, 'create'])->name('web.assignments.create');
+    Route::get('/assignments/{assignment}', [AssignmentPageController::class, 'show'])->whereNumber('assignment')->name('web.assignments.show');
 
     Route::get('/project-activities/create', [ProjectActivityPageController::class, 'create'])->name('web.project-activities.create');
 
     Route::post('/project-activities', [ProjectActivityPageController::class, 'store'])->name('web.project-activities.store');
 
     Route::get('/submissions', [SubmissionPageController::class, 'index'])->name('web.submissions.index');
+    Route::get('/submissions/{submission}', [SubmissionPageController::class, 'show'])->name('web.submissions.show');
 
     Route::post('/submissions/{submission}/review', [SubmissionPageController::class, 'review'])->name('web.submissions.review');
 
@@ -75,7 +88,7 @@ Route::middleware('auth')->group(function () {
 
     Route::view('/activity-sessions/live-tracking', 'activity_sessions.live')->name('web.activity-sessions.live');
 
-    Route::view('/activity-sessions/SES0001', 'activity_sessions.show')->name('web.activity-sessions.show');
+    Route::get('/activity-sessions/{session}', [ActivitySessionPageController::class, 'show'])->whereNumber('session')->name('web.activity-sessions.show');
 
     Route::view('/activity-sessions/map', 'activity_sessions.map')->name('web.activity-sessions.map');
 

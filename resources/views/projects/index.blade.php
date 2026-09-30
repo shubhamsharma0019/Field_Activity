@@ -47,6 +47,10 @@
         <div class="company-footer"><label class="page-size">Show <select id="project-page-size"><option>5</option><option selected>10</option></select> entries</label><span class="company-count" id="project-count"></span><nav class="pagination" id="project-pagination" aria-label="Project pages"></nav></div>
     </section>
     <dialog id="project-dialog"><button class="dialog-close" id="close-project-dialog" type="button">×</button><h2 id="project-dialog-title"></h2><p id="project-dialog-text"></p></dialog>
+    <dialog id="delete-project-dialog" aria-labelledby="delete-project-title" aria-describedby="delete-project-message">
+        <h2 id="delete-project-title">Delete project?</h2><p id="delete-project-message"></p>
+        <div class="project-dialog-actions"><button class="secondary-button" id="cancel-project-delete" type="button" autofocus>Cancel</button><button class="danger-button" id="confirm-project-delete" type="button">Delete</button></div>
+    </dialog>
     <div class="company-toast" id="project-toast" role="status" hidden></div>
 @endsection
 

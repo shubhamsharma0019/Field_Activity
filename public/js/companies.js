@@ -86,18 +86,18 @@ function renderCompanies() {
         }).join('');
 
         return '<tr>'
-            + '<td>' + (start + index + 1) + '</td>'
-            + '<td><span class="company-logo logo-' + escapeCompanyText(company.logo) + '" aria-hidden="true">' + logo + '</span></td>'
-            + '<td>' + escapeCompanyText(company.name) + '</td>'
-            + '<td>' + escapeCompanyText(company.company_code) + '</td>'
-            + '<td>' + escapeCompanyText(company.email) + '</td>'
-            + '<td>' + escapeCompanyText(company.phone) + '</td>'
-            + '<td>' + escapeCompanyText(company.contact) + '</td>'
-            + '<td>' + Number(company.projects_count || 0) + '</td>'
-            + '<td>' + Number(company.workers_count || 0) + '</td>'
-            + '<td><span class="company-status' + inactiveClass + '">' + escapeCompanyText(company.status_label) + '</span></td>'
-            + '<td>' + escapeCompanyText(company.created_date) + '</td>'
-            + '<td><div class="company-actions">' + actions + '</div></td>'
+            + '<td data-label="Number">' + (start + index + 1) + '</td>'
+            + '<td data-label="Logo"><span class="company-logo logo-' + escapeCompanyText(company.logo) + '" aria-hidden="true">' + logo + '</span></td>'
+            + '<td data-label="Company Name">' + escapeCompanyText(company.name) + '</td>'
+            + '<td data-label="Code">' + escapeCompanyText(company.company_code) + '</td>'
+            + '<td data-label="Email">' + escapeCompanyText(company.email) + '</td>'
+            + '<td data-label="Phone">' + escapeCompanyText(company.phone) + '</td>'
+            + '<td data-label="Contact Person">' + escapeCompanyText(company.contact) + '</td>'
+            + '<td data-label="Projects">' + Number(company.projects_count || 0) + '</td>'
+            + '<td data-label="Workers">' + Number(company.workers_count || 0) + '</td>'
+            + '<td data-label="Status"><span class="company-status' + inactiveClass + '">' + escapeCompanyText(company.status_label) + '</span></td>'
+            + '<td data-label="Created Date">' + escapeCompanyText(company.created_date) + '</td>'
+            + '<td data-label="Actions"><div class="company-actions">' + actions + '</div></td>'
             + '</tr>';
     }).join('');
 
@@ -163,6 +163,11 @@ rowsTarget.addEventListener('click', function (event) {
     });
 
     if (!company) {
+        return;
+    }
+
+    if (button.dataset.companyAction === 'view' || button.dataset.companyAction === 'edit') {
+        window.location.assign(button.dataset.companyAction === 'edit' ? company.edit_url : company.show_url);
         return;
     }
 

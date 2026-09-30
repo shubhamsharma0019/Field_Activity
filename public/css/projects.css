@@ -3,3 +3,60 @@
 .project-filters { display: grid; grid-template-columns: 2.4fr 1fr 1fr 1.3fr auto; gap: 10px; padding: 6px; margin-bottom: 9px; border-radius: 9px; background: #ffffffa6; }.project-filters select, .project-filters input { min-width: 0; padding: 10px; border: 1px solid #dce5ef; border-radius: 7px; background: #fbfdff; color: #2f415e; font: inherit; font-size: 12px; }.reset-button { border: 0; border-radius: 7px; padding: 0 16px; color: #3b5d91; background: #eaf2fc; font-weight: 600; }
 .project-panel { padding: 6px 7px 0; border-radius: 10px; background: #ffffffc9; overflow-x: auto; overflow-y: hidden; }.project-table { min-width: 1200px; font-size: 12px; }.project-table th { padding: 13px 8px; font-size: 12px; }.project-table th:last-child, .project-table td:last-child { width: 112px; min-width: 112px; text-align: center; }.project-table td { height: 55px; padding: 6px 8px; }.project-table input { width: 18px; height: 18px; accent-color: #1e6bf6; }.project-name { display: flex; align-items: center; gap: 10px; color: #13213a; }.project-thumb { width: 39px; height: 39px; border-radius: 6px; object-fit: cover; }.project-name small { display: block; margin-top: 4px; color: #677991; font-size: 10px; }.project-status { display: inline-block; padding: 7px 11px; border-radius: 7px; font-size: 11px; }.project-status.active { color: #098752; background: #ddf7ea; }.project-status.hold { color: #d96816; background: #ffeadb; }.project-status.completed { color: #1764d5; background: #e5f1ff; }.progress-wrap { display: flex; align-items: center; gap: 7px; }.progress-bar { width: 68px; height: 10px; overflow: hidden; border-radius: 8px; background: #e8edf4; }.progress-bar span { display: block; height: 100%; border-radius: inherit; background: #1673ed; }.progress-bar.high span { background: #0bbb77; }.progress-bar.low span { background: #ff8b18; }.progress-meta { display: block; margin-top: 4px; color: #6b7c93; font-size: 10px; }.worker-total { display: flex; gap: 5px; align-items: center; }.worker-total .icon { width: 18px; }.company-footer { display: flex; align-items: center; gap: 20px; padding: 22px 9px; }.page-size { display: flex; align-items: center; gap: 9px; }.page-size select { padding: 8px; border: 1px solid #dce5ef; border-radius: 7px; background: white; }.company-count { color: #718299; font-size: 11px; }.pagination { display: flex; gap: 6px; margin-left: auto; }.pagination button { min-width: 38px; height: 38px; border: 1px solid #e1e8f2; border-radius: 8px; background: #fbfdff; }.pagination button.active { color: white; border-color: #1e6bf6; background: #1e6bf6; }.company-action { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; height: 30px; border: 0; border-radius: 7px; padding: 0 8px; color: #1968e5; background: #eaf2fe; font-size: 10px; white-space: nowrap; }.company-actions { display: flex; justify-content: center; gap: 6px; white-space: nowrap; }
 @media (max-width: 1100px) { .project-stats { grid-template-columns: repeat(2, 1fr); }.project-filters { grid-template-columns: 2fr 1fr 1fr; }.project-filters .company-search { grid-column: 1 / -1; } } @media (max-width: 550px) { .project-stats { gap: 10px; }.project-stat { gap: 9px; padding: 13px 10px; }.project-stat > span { width: 40px; height: 40px; }.project-stat h2 { font-size: 10px; }.project-stat strong { font-size: 22px; }.project-stat p { font-size: 10px; }.project-filters { grid-template-columns: 1fr 1fr; }.project-filters .company-search { grid-column: 1 / -1; } }
+
+/* Search field and icon actions on the Projects page. */
+.project-filters > * { min-width: 0; }
+.project-filters .company-search { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 13px; border: 1px solid #dce5ef; border-radius: 7px; background: #fbfdff; color: #617592; }
+.project-filters .company-search .icon { width: 20px; height: 20px; flex-shrink: 0; }
+.project-filters .company-search input { flex: 1; width: 100%; min-width: 0; height: 44px; padding: 0; border: 0; outline: 0; background: transparent; font-size: 13px; }
+.project-filters .company-search input::placeholder { color: #7c8ca3; }
+.project-filters .company-search:focus-within { border-color: #1768ee; outline: 2px solid #8fb7ff; outline-offset: 1px; }
+.project-filters select, .project-filters > input, .project-filters .reset-button { min-height: 44px; }
+.project-table .company-action { width: 36px; min-width: 36px; height: 36px; flex-shrink: 0; padding: 8px; border-radius: 9px; }
+.project-table .company-action .icon { width: 20px; height: 20px; }
+.project-table .company-action.edit { color: #526987; background: #edf2f8; }
+.project-table .company-action.delete { color: #ff304f; background: #ffedf0; }
+.project-table .company-action:hover { filter: brightness(.96); }
+.project-table .company-action:focus-visible { outline: 2px solid #1768ee; outline-offset: 3px; }
+.project-table th:last-child, .project-table td:last-child { width: 136px; min-width: 136px; }
+@media (max-width: 760px) {
+    .project-filters .company-search input { font-size: 16px; }
+    .project-table .company-action { width: 44px; min-width: 44px; height: 44px; }
+    .project-table th:last-child, .project-table td:last-child { width: 160px; min-width: 160px; }
+}
+
+.project-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+.project-dialog-actions button { min-height: 44px; padding: 13px 18px; border: 0; border-radius: 8px; font-size: 14px; }
+.project-dialog-actions .secondary-button { background: #edf2f9; color: #435773; }
+.project-dialog-actions .danger-button { background: #e83649; color: white; }
+
+@media (max-width: 760px) {
+    .project-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .project-stat { min-width: 0; flex-wrap: wrap; padding: 14px; gap: 10px; }
+    .project-stat > span { flex-shrink: 0; }
+    .project-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .project-filters select, .project-filters > input { width: 100%; min-width: 0; font-size: 14px; padding: 8px; }
+    .project-filters .company-search { grid-column: 1 / -1; }
+    .project-panel { padding: 0; background: transparent; overflow: visible; }
+    .project-panel .company-table-scroll { overflow: visible; }
+    .project-table, .project-table tbody { display: block; width: 100%; min-width: 0; }
+    .project-table thead { display: none; }
+    .project-table tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) 32px; padding: 16px; margin-bottom: 14px; border: 1px solid #e2eaf4; border-radius: 14px; background: white; }
+    .project-table tbody td { display: grid; grid-column: 1 / -1; grid-template-columns: 90px minmax(0, 1fr); gap: 10px; align-items: center; height: auto; min-width: 0; padding: 10px 0; border: 0; border-bottom: 1px solid #edf2f7; white-space: normal; overflow-wrap: anywhere; font-size: 13px; text-align: left; }
+    .project-table td::before { content: attr(data-label); color: #718299; }
+    .project-table td:nth-child(1) { grid-column: 2; grid-row: 1; display: flex; justify-content: flex-end; border: 0; padding: 0 0 14px; }
+    .project-table td:nth-child(2) { display: none; }
+    .project-table td:nth-child(3) { grid-column: 1; grid-row: 1; display: block; border: 0; padding: 0 0 14px; font-size: 15px; font-weight: 600; }
+    .project-table td:nth-child(1)::before, .project-table td:nth-child(3)::before { display: none; }
+    .project-table .project-thumb { flex: 0 0 44px; width: 44px; height: 44px; }
+    .project-table .project-name > span { min-width: 0; }
+    .project-table .project-status { justify-self: start; }
+    .project-table .progress-meta { grid-column: 2; margin-top: 0; }
+    .project-table .progress-bar { flex: 1; min-width: 0; max-width: 110px; }
+    .project-table td:last-child { width: auto; min-width: 0; border: 0; padding: 14px 0 0; text-align: left; }
+    .project-table .company-actions { justify-content: flex-end; gap: 8px; }
+    .project-panel .company-footer { flex-wrap: wrap; gap: 14px; padding: 12px 4px; }
+    .project-panel .company-count { display: block; }
+    .project-panel .pagination { flex-wrap: wrap; margin-left: 0; }
+    #delete-project-dialog { box-sizing: border-box; width: min(420px, calc(100% - 24px)); max-width: calc(100% - 24px); padding: 22px; }
+}

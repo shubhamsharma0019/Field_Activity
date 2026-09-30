@@ -167,18 +167,27 @@
     document.getElementById('assignment-form-button')?.addEventListener('click', function () {
         if (form) {
             form.hidden = false;
+            this.setAttribute('aria-expanded', 'true');
+            form.scrollIntoView({ block: 'start' });
+            formCompany?.focus({ preventScroll: true });
         }
     });
 
     document.getElementById('close-assignment-form')?.addEventListener('click', function () {
         if (form) {
             form.hidden = true;
+            const opener = document.getElementById('assignment-form-button');
+            opener?.setAttribute('aria-expanded', 'false');
+            opener?.focus();
         }
     });
 
     document.getElementById('cancel-assignment')?.addEventListener('click', function () {
         if (form) {
             form.hidden = true;
+            const opener = document.getElementById('assignment-form-button');
+            opener?.setAttribute('aria-expanded', 'false');
+            opener?.focus();
         }
     });
 

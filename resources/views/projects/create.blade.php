@@ -15,6 +15,7 @@
 
     <div class="page-heading create-project-heading">
         <div><h1>Add Project</h1><p>Create a new project and assign it to a company.</p></div>
+        <a class="back-projects-button" href="{{ route('web.projects.index') }}">&larr; Back to Projects</a>
     </div>
 
     @if ($errors->any())

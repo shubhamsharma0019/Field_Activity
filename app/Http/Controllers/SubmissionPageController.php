@@ -51,8 +51,17 @@ class SubmissionPageController extends Controller
         ]);
     }
 
+    public function show(Request $request, ActivitySubmission $submission): View
+    {
+        abort_unless($request->user()->status === 'active' && in_array($request->user()->role, ['admin', 'super_admin'], true), 403);
+        $submission->load(['assignment.project.company', 'assignment.projectActivity.activityType', 'worker', 'reviewer']);
+
+        return view('submissions.show', ['submission' => $this->row($submission)]);
+    }
+
     public function review(Request $request, ActivitySubmission $submission): RedirectResponse
     {
+        abort_unless($request->user()->status === 'active' && in_array($request->user()->role, ['admin', 'super_admin'], true), 403);
         $validated = $request->validate([
             'approval_status' => ['required', Rule::in(['approved', 'rejected'])],
             'rejection_reason' => ['nullable', 'string', 'max:500'],
@@ -86,8 +95,8 @@ class SubmissionPageController extends Controller
         }
 
         return redirect()
-            ->route('web.submissions.index')
-            ->with('status', 'Submission ' . str_replace('_', ' ', $validated['approval_status']) . ' successfully.');
+            ->route('web.submissions.show', $submission)
+            ->with('status', 'Submission '.str_replace('_', ' ', $validated['approval_status']).' successfully.');
     }
 
     private function row(ActivitySubmission $submission): array
@@ -102,7 +111,7 @@ class SubmissionPageController extends Controller
 
         return [
             'id' => $submission->id,
-            'title' => $projectActivity?->name ?? 'Submission #' . $submission->submission_no,
+            'title' => $projectActivity?->name ?? 'Submission #'.$submission->submission_no,
             'project' => $project?->name ?? 'Internal Project',
             'project_code' => $project?->project_code ?? 'PRJ---',
             'project_id' => $project?->id,
@@ -112,7 +121,7 @@ class SubmissionPageController extends Controller
             'activity_type_id' => $activityType?->id,
             'mode' => $this->modeLabel((string) ($activityType?->activity_mode ?? 'single_submission')),
             'worker' => $worker?->name ?? 'Worker',
-            'worker_code' => $worker ? 'USR' . str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT) : 'USR---',
+            'worker_code' => $worker ? 'USR'.str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT) : 'USR---',
             'worker_mobile' => $worker?->mobile ?? 'N/A',
             'location' => $location,
             'latitude' => $submission->latitude,
@@ -144,7 +153,7 @@ class SubmissionPageController extends Controller
         $project = $submission->assignment?->project;
         $parts = array_filter([$project?->area, $project?->city, $project?->state]);
 
-        return $parts ? implode(', ', $parts) : $submission->latitude . ', ' . $submission->longitude;
+        return $parts ? implode(', ', $parts) : $submission->latitude.', '.$submission->longitude;
     }
 
     private function modeLabel(string $mode): string

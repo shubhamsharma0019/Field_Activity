@@ -3,7 +3,7 @@
 @push('styles')<link rel="stylesheet" href="{{ asset('css/companies.css') }}">@endpush
 @section('content')
 <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ route('web.dashboard') }}"><svg class="icon"><use href="#home"/></svg>Dashboard</a><span>&rsaquo;</span><a href="{{ route('web.companies.index') }}">Companies</a><span>&rsaquo;</span><span aria-current="page">Add Company</span></nav>
-<div class="page-heading create-heading"><div><h1>Add Company</h1><p>Create a new company in the system.</p></div></div>
+<div class="page-heading create-heading"><div><h1>Add Company</h1><p>Create a new company in the system.</p></div><a class="secondary-button back-companies-button" href="{{ route('web.companies.index') }}">&larr; Back to Companies</a></div>
 @if ($errors->any())
     <div class="company-toast error">{{ $errors->first() }}</div>
 @endif

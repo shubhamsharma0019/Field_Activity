@@ -10,6 +10,44 @@ use Illuminate\Support\Str;
 
 class CompanyPageController extends Controller
 {
+    private function authorizeCompanyManagement(Request $request): void
+    {
+        abort_unless($request->user()->status === 'active' && in_array($request->user()->role, ['admin', 'super_admin'], true), 403);
+    }
+
+    public function show(Request $request, Company $company): View
+    {
+        $this->authorizeCompanyManagement($request);
+        $company->loadCount(['projects', 'users', 'users as workers_count' => fn ($query) => $query->where('role', 'worker')]);
+
+        return view('companies.show', compact('company'));
+    }
+
+    public function edit(Request $request, Company $company): View
+    {
+        $this->authorizeCompanyManagement($request);
+
+        return view('companies.edit', compact('company'));
+    }
+
+    public function update(Request $request, Company $company): RedirectResponse
+    {
+        $this->authorizeCompanyManagement($request);
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:150'],
+            'email' => ['required', 'email', 'max:150'],
+            'mobile' => ['required', 'string', 'max:20'],
+            'contact_person' => ['required', 'string', 'max:150'],
+            'address' => ['required', 'string', 'max:500'],
+            'city' => ['required', 'string', 'max:100'],
+            'state' => ['required', 'string', 'max:100'],
+            'status' => ['required', 'in:active,inactive'],
+        ]);
+        $company->update($validated);
+
+        return redirect()->route('web.companies.show', $company)->with('success', 'Company updated successfully.');
+    }
+
     public function index(): View
     {
         $companies = Company::query()
@@ -22,6 +60,8 @@ class CompanyPageController extends Controller
             ->get()
             ->map(fn (Company $company): array => [
                 'id' => $company->id,
+                'show_url' => route('web.companies.show', $company),
+                'edit_url' => route('web.companies.edit', $company),
                 'company_code' => $company->company_code,
                 'name' => $company->name,
                 'email' => $company->email,
@@ -113,7 +153,7 @@ class CompanyPageController extends Controller
         $number = Company::count() + 1;
 
         do {
-            $code = $prefix . str_pad((string) $number, 4, '0', STR_PAD_LEFT);
+            $code = $prefix.str_pad((string) $number, 4, '0', STR_PAD_LEFT);
             $number++;
         } while (Company::where('company_code', $code)->exists());
 

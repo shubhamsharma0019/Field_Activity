@@ -30,7 +30,7 @@
         <article class="session-stat blue"><span>x</span><div><h2>Rejected</h2><strong>{{ $stats['rejected'] }}</strong><p>+ {{ $stats['rejected_month'] }} this month</p></div></article>
     </div>
 
-    <div class="session-layout">
+    <div class="session-layout session-list-only">
         <section class="sessions-main">
             <div class="session-filters">
                 <input id="session-search" placeholder="Search by worker, assignment or session ID...">
@@ -82,7 +82,7 @@
                             <td>{{ $session['duration'] }}</td>
                             <td>{{ $session['end_time'] }}</td>
                             <td><span class="session-status {{ $session['status'] }}">{{ $session['status_label'] }}</span></td>
-                            <td><button class="session-view" type="button" aria-label="View {{ $session['code'] }}"><svg class="icon"><use href="#eye"/></svg></button></td>
+                            <td><a class="session-view" href="{{ route('web.activity-sessions.show', $session['id']) }}" aria-label="View {{ $session['code'] }}"><svg class="icon"><use href="#eye"/></svg></a></td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -90,29 +90,7 @@
             <p id="sessions-empty" class="empty-state" @if (count($sessions) > 0) hidden @endif>No activity sessions found.</p>
         </section>
 
-        <aside class="session-detail">
-            <div class="detail-head"><h2>Session Details</h2><span>x</span></div>
-            <div class="detail-profile-session"><span id="detail-initials">WK</span><div><strong id="detail-worker">Select Session</strong><small id="detail-worker-meta">N/A</small></div></div>
-            <table class="session-info">
-                <tr><td>Assignment</td><td id="detail-assignment">N/A</td></tr>
-                <tr><td>Project</td><td id="detail-project">N/A</td></tr>
-                <tr><td>Company</td><td id="detail-company">N/A</td></tr>
-                <tr><td>Activity Mode</td><td id="detail-mode">N/A</td></tr>
-                <tr><td>Current Duration</td><td id="detail-duration">N/A</td></tr>
-                <tr><td>Start GPS</td><td id="detail-start-gps">N/A</td></tr>
-                <tr><td>End GPS</td><td id="detail-end-gps">N/A</td></tr>
-                <tr><td>Status</td><td id="detail-status">N/A</td></tr>
-            </table>
-            <section class="detail-box"><h3>Start Evidence</h3><div class="evidence" id="start-evidence"></div></section>
-            <section class="detail-box"><h3>End Evidence</h3><div class="evidence" id="end-evidence"></div></section>
-            <section class="detail-box"><h3>Activity Timeline</h3><div class="timeline" id="detail-timeline"></div></section>
-            <section class="detail-box"><h3>Review Comment</h3><textarea id="session-review-comment" name="rejection_reason" form="session-review-form" maxlength="500" placeholder="Add review comment..."></textarea></section>
-            <form id="session-review-form" method="POST" action="">
-                @csrf
-                <input type="hidden" id="session-review-status" name="status" value="approved">
-                <div class="session-review-actions"><button class="reject-button" type="submit" data-status="rejected">Reject</button><button class="approve-button" type="submit" data-status="approved">Approve</button></div>
-            </form>
-        </aside>
+
     </div>
 @endsection
 

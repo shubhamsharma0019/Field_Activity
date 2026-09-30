@@ -20,7 +20,7 @@
     }
 
     function selectCard(card) {
-        if (!card) {
+        if (!card || !reviewForm) {
             return;
         }
 

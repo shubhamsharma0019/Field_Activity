@@ -11,7 +11,7 @@
 
 @section('content')
     <nav class="breadcrumbs"><a href="{{ route('web.dashboard') }}"><svg class="icon"><use href="#home"/></svg>Dashboard</a><span>&rsaquo;</span><a href="{{ route('web.activity-sessions.index') }}">Activity Sessions</a><span>&rsaquo;</span><span>Full Map</span></nav>
-    <div class="full-map-heading"><h1>Live Worker Location Map</h1><p>View current locations and movement routes of active field workers.</p></div>
+    <div class="full-map-heading map-heading-with-back"><div><h1>Live Worker Location Map</h1><p>View current locations and movement routes of active field workers.</p></div><a class="back-sessions-button" href="{{ route('web.activity-sessions.index') }}">&larr; Back to Activity Sessions</a></div>
 
     <section class="full-map">
         <div class="map-filter-bar"><select><option>All Projects</option></select><select><option>All Workers</option></select><select><option>Active Workers</option></select><button type="button" id="refresh-map">&#8635; Refresh Location</button></div>

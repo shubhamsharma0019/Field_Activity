@@ -1,14 +1,43 @@
-<div>
-    <!-- The whole future lies in uncertainty: live immediately. - Seneca -->
-</div>
 @extends('layout.app')
-@section('title', 'Activity Session SES0001')
-@push('styles')<link rel="stylesheet" href="{{ asset('css/session-show.css') }}">@endpush
+@section('title', 'Activity Session '.$session['code'])
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/submissions.css') }}">
+@endpush
 @section('content')
-<nav class="breadcrumbs"><a href="{{ route('web.dashboard') }}"><svg class="icon"><use href="#home"/></svg>Dashboard</a><span>&rsaquo;</span><a href="{{ route('web.activity-sessions.index') }}">Activity Sessions</a><span>&rsaquo;</span><span>SES0001</span></nav>
-<div class="page-heading session-show-heading"><div><h1>Activity Session - SES0001 <span class="session-status active">Active</span></h1><p>Track live location, activity progress and field evidence for this session.</p></div><div class="session-show-actions"><a href="{{ route('web.activity-sessions.map') }}">View on Full Map</a><button class="end" type="button">End Session</button></div></div>
-<div class="session-data"><article class="blue"><span>RK</span><div><h2>Worker</h2><strong>Ramesh Kumar</strong></div></article><article class="blue"><span>⌁</span><div><h2>Assignment</h2><strong>Canopy Installation</strong></div></article><article class="green"><span>◈</span><div><h2>Project</h2><strong>City Clean Drive</strong></div></article><article class="purple"><span>▣</span><div><h2>Company</h2><strong>ABC Company</strong></div></article><article class="orange"><span>▣</span><div><h2>Started At</h2><strong>28 Sep 2026<br>09:15 AM</strong></div></article><article class="blue"><span>◷</span><div><h2>Duration</h2><strong>3h 25m</strong></div></article></div>
-<div class="session-tabs"><b>⌖ Live Tracking</b><span>☷ Activity Details</span><span>▧ Photos (5)</span><span>◉ Updates (6)</span><span>⌖ Location History</span><span>▤ Documents</span><span>▱ Remarks</span></div>
-<div class="session-show-grid"><section class="session-map-big"><i></i><b class="p1"><span>RK</span></b><b class="p2"><span>•</span></b><b class="p3"><span>•</span></b><div class="map-label">New Delhi</div></section><section class="timeline-card"><h2>Activity Timeline</h2><div class="session-timeline"><p><b>09:15 AM · Session Started</b><small>Worker started the activity</small></p><p><b>09:20 AM · Reached Location</b><small>Reached activity location</small></p><p><b>09:30 AM · Photo Submitted</b><small>Site before installation</small></p><p><b>10:45 AM · Activity Update</b><small>Installation in progress</small></p><p><b>12:35 PM · Activity Update</b><small>Structure installed</small></p><p><b>12:50 PM · Waiting for End</b></p></div></section><aside class="status-card"><h2>Current Status</h2><table><tr><td>Started At</td><td>28 Sep, 09:15 AM</td></tr><tr><td>Current Duration</td><td>3h 25m</td></tr><tr><td>Last Update</td><td>5 minutes ago</td></tr><tr><td>Current Location</td><td>Karol Bagh, New Delhi</td></tr><tr><td>Battery</td><td>68%</td></tr><tr><td>Network</td><td>4G</td></tr></table><div class="current-activity"><b>Canopy Installation</b><br><br>Install promotional canopy at assigned location.<div class="progress"><i></i></div><br><b>Progress: 60%</b></div></aside><section class="photos-card"><h2>Latest Photos</h2><div class="photo-row">@for($photo=1;$photo<=5;$photo++)<img src="{{ asset('images/admin-construction.jpg') }}" alt="Activity evidence">@endfor</div></section><section class="quick-card"><h2>Quick Actions</h2><div class="quick-grid"><button>Add Photo</button><button>Add Update</button><button>Mark Location</button><button>End Session</button></div></section></div><div id="session-toast" class="company-toast" hidden></div>
+    <nav class="breadcrumbs"><a href="{{ route('web.activity-sessions.index') }}">Activity Sessions</a><span>&rsaquo;</span><span>{{ $session['code'] }}</span></nav>
+    <div class="page-heading submissions-heading">
+        <div><h1>{{ $session['assignment'] }}</h1><p>{{ $session['worker'] }} &middot; {{ $session['code'] }} &middot; {{ $session['duration'] }}</p></div>
+        <a class="export-button" href="{{ route('web.activity-sessions.index') }}">Back to Activity Sessions</a>
+    </div>
+    @if (session('status'))<p class="review-alert" role="status">{{ session('status') }}</p>@endif
+    @if ($errors->any())<div class="review-alert review-alert-error" role="alert">{{ $errors->first() }}</div>@endif
+    <div class="submission-review-page">
+        <section class="submission-detail">
+            <div class="detail-heading"><h2>Session Evidence</h2><span class="submission-status {{ $session['status'] === 'approved' ? 'approved' : ($session['status'] === 'rejected' ? 'rejected' : 'pending') }}">{{ $session['status_label'] }}</span></div>
+            @foreach (['Start Evidence' => 'start', 'End Evidence' => 'end'] as $label => $phase)
+                <section class="detail-section"><h3>{{ $label }}</h3><p class="detail-note">{{ $session[$phase.'_time'] }}</p></section>
+                <div class="submission-photo-preview">
+                    <a class="submission-photo-link" href="{{ $session[$phase.'_image_url'] }}" target="_blank" rel="noopener"><img class="submission-full-photo" src="{{ $session[$phase.'_image_url'] }}" alt="{{ $label }} for {{ $session['assignment'] }}"></a>
+                    <div class="submission-photo-missing" hidden role="status"><strong>Photo unavailable</strong><p>The session photo could not be loaded.</p></div>
+                </div>
+            @endforeach
+            <section class="detail-section"><h3>Worker Remark</h3><p class="detail-note">{{ $session['remark'] }}</p></section>
+        </section>
+        <section class="submission-detail">
+            <div class="detail-heading"><h2>Session Details</h2></div>
+            <section class="detail-section"><table class="detail-table">
+                @foreach (['Session ID' => $session['code'], 'Worker' => $session['worker'], 'Mobile' => $session['worker_mobile'], 'Assignment' => $session['assignment'], 'Project' => $session['project'], 'Company' => $session['company'], 'Activity Mode' => $session['activity_mode'], 'Location' => $session['location'], 'Started At' => $session['start_time'], 'Ended At' => $session['end_time'], 'Duration' => $session['duration'], 'Start GPS' => $session['start_gps'], 'End GPS' => $session['end_gps'], 'Reviewed By' => $session['reviewer'], 'Reviewed At' => $session['reviewed_at']] as $label => $value)
+                    <tr><td>{{ $label }}</td><td>{{ $value ?: '-' }}</td></tr>
+                @endforeach
+            </table></section>
+            <form method="POST" action="{{ route('web.activity-sessions.review', $session['id']) }}">
+                @csrf
+                <section class="detail-section"><label for="session-comment">Review Comment</label><textarea id="session-comment" class="comment-box" name="rejection_reason" maxlength="500" placeholder="Add review comments...">{{ old('rejection_reason', $session['rejection_reason']) }}</textarea></section>
+                <div class="detail-actions"><button class="reject-button" type="submit" name="status" value="rejected">Reject</button><button class="approve-button" type="submit" name="status" value="approved">Approve</button></div>
+            </form>
+        </section>
+    </div>
 @endsection
-@push('scripts')<script src="{{ asset('js/session-show.js') }}"></script>@endpush
+@push('scripts')
+    <script src="{{ asset('js/submission-review.js') }}"></script>
+@endpush

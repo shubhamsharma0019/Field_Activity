@@ -9,7 +9,7 @@
 @section('content')
 <nav class="breadcrumbs"><a href="{{ route('web.dashboard') }}"><svg class="icon"><use href="#home"/></svg>Dashboard</a><span>&rsaquo;</span><span>Settings</span></nav>
 <div class="settings-heading"><h1>Settings</h1><p>Manage your system settings, preferences and configurations.</p></div>
-<nav class="settings-tabs"><b><svg class="icon"><use href="#settings"/></svg> General</b><span>User Management</span><span>Notifications</span><span>System Configuration</span><span>Security</span><span>Appearance</span><span>Integration</span></nav>
+<div class="settings-tabs"><b><svg class="icon"><use href="#settings"/></svg> General</b></div>
 
 @if (session('status'))
     <div class="company-toast">{{ session('status') }}</div>

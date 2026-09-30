@@ -15,6 +15,7 @@
 
     <div class="page-heading create-user-heading">
         <div><h1>Add User</h1><p>Create a new user account in the system.</p></div>
+        <a class="back-users-button" href="{{ route('web.users.index') }}">&larr; Back to Users</a>
     </div>
 
     <form id="create-user-form" class="create-user-form">

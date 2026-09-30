@@ -61,16 +61,20 @@
             const inactiveClass = user.status === 'inactive' ? ' inactive' : '';
 
             return '<tr>'
-                + '<td><input type="checkbox" aria-label="Select ' + escapeText(user.name) + '"></td>'
-                + '<td>' + (startIndex + index + 1) + '</td>'
-                + '<td><span class="user-name"><span class="avatar user-avatar">' + escapeText(initials(user.name)) + '</span><span>' + escapeText(user.name) + '<small>' + escapeText(user.code) + '</small></span></span></td>'
-                + '<td>' + escapeText(user.email) + '</td>'
-                + '<td>' + escapeText(user.mobile) + '</td>'
-                + '<td><span class="role-badge ' + escapeText(user.role) + '">' + escapeText(user.role_label) + '</span></td>'
-                + '<td>' + escapeText(user.company) + '</td>'
-                + '<td><span class="company-status' + inactiveClass + '">' + escapeText(user.status_label) + '</span></td>'
-                + '<td>' + escapeText(user.created_date) + '</td>'
-                + '<td><div class="company-actions"><button class="company-action user-action" data-user-id="' + user.id + '" data-user-action="view" type="button">View</button><button class="company-action edit user-action" data-user-id="' + user.id + '" data-user-action="edit" type="button">Edit</button></div></td>'
+                + '<td data-label="Select"><input type="checkbox" aria-label="Select ' + escapeText(user.name) + '"></td>'
+                + '<td data-label="Number">' + (startIndex + index + 1) + '</td>'
+                + '<td data-label="Name"><span class="user-name"><span class="avatar user-avatar">' + escapeText(initials(user.name)) + '</span><span>' + escapeText(user.name) + '<small>' + escapeText(user.code) + '</small></span></span></td>'
+                + '<td data-label="Email">' + escapeText(user.email) + '</td>'
+                + '<td data-label="Mobile">' + escapeText(user.mobile) + '</td>'
+                + '<td data-label="Role"><span class="role-badge ' + escapeText(user.role) + '">' + escapeText(user.role_label) + '</span></td>'
+                + '<td data-label="Company">' + escapeText(user.company) + '</td>'
+                + '<td data-label="Status"><span class="company-status' + inactiveClass + '">' + escapeText(user.status_label) + '</span></td>'
+                + '<td data-label="Created Date">' + escapeText(user.created_date) + '</td>'
+                + '<td data-label="Actions"><div class="company-actions">'
+                + '<button class="company-action user-action" data-user-id="' + user.id + '" data-user-action="view" type="button" aria-label="View user" title="View user"><svg class="icon" aria-hidden="true"><use href="#eye"/></svg></button>'
+                + '<button class="company-action edit user-action" data-user-id="' + user.id + '" data-user-action="edit" type="button" aria-label="Edit user" title="Edit user"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14Zm-1 3h18"/></svg></button>'
+                + '<button class="company-action delete user-action" data-user-id="' + user.id + '" data-user-action="delete" type="button" aria-label="Delete user" title="Delete user"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></svg></button>'
+                + '</div></td>'
                 + '</tr>';
         }).join('');
 
@@ -153,6 +157,17 @@
             return;
         }
 
+        if (button.dataset.userAction === 'view' || button.dataset.userAction === 'edit') {
+            window.location.assign(button.dataset.userAction === 'edit' ? user.edit_url : user.show_url);
+            return;
+        }
+
+        if (button.dataset.userAction === 'delete') {
+            document.getElementById('delete-user-message').textContent = 'Are you sure you want to delete ' + user.name + '? A completed deletion cannot be undone.';
+            document.getElementById('delete-user-dialog').showModal();
+            return;
+        }
+
         document.getElementById('user-dialog-title').textContent = user.name;
         document.getElementById('user-dialog-text').textContent = [
             'Code: ' + user.code,
@@ -176,6 +191,18 @@
 
     document.getElementById('close-user-dialog').addEventListener('click', function () {
         document.getElementById('user-dialog').close();
+    });
+
+    const deleteDialog = document.getElementById('delete-user-dialog');
+    document.getElementById('cancel-user-delete').addEventListener('click', function () {
+        deleteDialog.close();
+    });
+    document.getElementById('confirm-user-delete').addEventListener('click', function () {
+        deleteDialog.close();
+        const toast = document.getElementById('user-toast');
+        toast.textContent = 'User deletion is not connected yet. No user has been deleted.';
+        toast.hidden = false;
+        setTimeout(function () { toast.hidden = true; }, 4000);
     });
 
     renderUsers();

@@ -19,7 +19,7 @@
     }
 
     function selectSession(row) {
-        if (!row) {
+        if (!row || !reviewForm) {
             return;
         }
 
