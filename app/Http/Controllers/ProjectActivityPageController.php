@@ -11,11 +11,12 @@ use Illuminate\View\View;
 
 class ProjectActivityPageController extends Controller
 {
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('project_activities.create', [
             'projects' => Project::query()->whereIn('status', ['active', 'draft'])->orderBy('name')->get(['id', 'name', 'start_date', 'end_date']),
             'activityTypes' => ActivityType::query()->where('status', 'active')->orderBy('name')->get(['id', 'name', 'activity_mode']),
+            'selectedProjectId' => $request->query('project_id'),
         ]);
     }
 

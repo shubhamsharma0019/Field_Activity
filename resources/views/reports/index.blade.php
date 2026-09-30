@@ -92,10 +92,6 @@
             </table>
         </div>
     </section>
-    <section class="report-panel">
-        <h2>Activity Heat Map</h2>
-        <div class="heat-map" id="heat-map"></div>
-    </section>
 </div>
 <div id="report-toast" class="company-toast" hidden></div>
 @endsection

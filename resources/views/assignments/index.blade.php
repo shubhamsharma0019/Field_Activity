@@ -84,7 +84,7 @@
                 @csrf
                 <label>Company <em>*</em><select id="form-company"><option value="all">All Companies / Internal</option><option value="internal">Internal Project</option>@foreach ($companies as $company)<option value="{{ $company->id }}">{{ $company->name }}</option>@endforeach</select></label>
                 <label>Project <em>*</em><select id="form-project" name="project_id" required><option value="" selected disabled>Select project</option>@foreach ($projects as $project)<option value="{{ $project->id }}" data-company="{{ $project->company_id ?? 'internal' }}">{{ $project->name }}</option>@endforeach</select></label>
-                <label>Project Work <em>*</em><select id="form-project-activity" name="project_activity_id" required><option value="" selected disabled>Select project work</option>@foreach ($activities as $activity)<option value="{{ $activity->id }}" data-project="{{ $activity->project_id }}" data-mode="{{ $activity->activityType?->activity_mode }}" data-tracking="{{ $activity->activityType?->tracking_required ? '1' : '0' }}" data-target="{{ $activity->target_quantity }}">{{ $activity->name }} - {{ $activity->activityType?->name }}</option>@endforeach</select></label>
+                <label>Project Work <em>*</em><select id="form-project-activity" name="project_activity_id" required><option value="" selected disabled>Select project work</option>@foreach ($activities as $activity)<option value="{{ $activity->id }}" data-project="{{ $activity->project_id }}" data-mode="{{ $activity->activityType?->activity_mode }}" data-tracking="{{ $activity->activityType?->tracking_required ? '1' : '0' }}" data-target="{{ $activity->target_quantity }}">{{ $activity->name }} - {{ $activity->activityType?->name }}</option>@endforeach</select><small id="project-work-empty" hidden>No project work found for this project. <a id="project-work-create-link" href="{{ route('web.project-activities.create') }}">Add Project Work</a></small></label>
                 <label>Work Mode <em>*</em><input id="form-activity-mode" value="Select project work" readonly></label>
                 <label>Assign to Worker <em>*</em><select id="form-worker" name="worker_id" required><option value="" selected disabled>Select worker</option><option value="" disabled data-empty-message hidden>No active worker for selected project company</option>@foreach ($workers as $worker)<option value="{{ $worker->id }}" data-company="{{ $worker->company_id ?? 'internal' }}">{{ $worker->name }}{{ $worker->mobile ? ' - '.$worker->mobile : '' }}</option>@endforeach</select></label>
                 <label>Target Quantity<input id="form-target" name="target_quantity" type="number" min="1" placeholder="Use project work target"></label>
@@ -98,5 +98,8 @@
 @endsection
 
 @push('scripts')
+    <script>
+        window.assignmentWorkTypes = @json($activityTypes);
+    </script>
     <script src="{{ asset('js/assignments.js') }}"></script>
 @endpush

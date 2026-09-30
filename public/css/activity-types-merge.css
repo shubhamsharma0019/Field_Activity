@@ -20,6 +20,10 @@
     background: #f8fbff;
 }
 
+.project-work-fields[hidden] {
+    display: none;
+}
+
 .project-work-fields .wide-field {
     grid-column: 1 / -1;
 }

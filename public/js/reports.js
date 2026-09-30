@@ -242,15 +242,6 @@
             `<div>${group.count}<i style="--height:${Math.max(8, Math.round(group.count / max * 100))}%"></i><small>${escapeHtml(group.name)}</small></div>`
         )).join('') : '<div>0<i style="--height:8%"></i><small>No Data</small></div>';
 
-        const heat = document.getElementById('heat-map');
-        if (heat) {
-            heat.innerHTML = groups.slice(0, 8).map((group, index) => {
-                const left = 14 + (index * 23) % 72;
-                const top = 18 + (index * 31) % 64;
-                const size = 34 + Math.min(42, group.count * 7);
-                return `<span class="heat-point" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${escapeHtml(group.name)}: ${group.count}"></span>`;
-            }).join('');
-        }
     }
 
     function renderRecent() {

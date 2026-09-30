@@ -80,7 +80,7 @@
                             data-reviewed-at="{{ $submission['reviewed_at'] }}"
                             data-rejection-reason="{{ $submission['rejection_reason'] }}"
                             data-search="{{ $submission['search'] }}">
-                            <div class="submission-photo" data-count="{{ $submission['photo_count'] }}" style="background-image: linear-gradient(135deg, #162d41aa, #2e9a79aa), url('{{ $submission['image_url'] }}')"></div>
+                            <div class="submission-photo" data-count="{{ $submission['photo_count'] }}" style="background-image: url('{{ $submission['image_url'] }}')"></div>
                             <h3>{{ $submission['title'] }}</h3>
                             <p>{{ $submission['location'] }}</p>
                             <strong>{{ $submission['worker'] }}</strong>

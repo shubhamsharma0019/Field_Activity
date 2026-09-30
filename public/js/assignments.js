@@ -16,7 +16,17 @@
     const formTarget = document.getElementById('form-target');
     const formTracking = document.getElementById('form-tracking');
     const formWorker = document.getElementById('form-worker');
+    const projectWorkEmpty = document.getElementById('project-work-empty');
+    const projectWorkCreateLink = document.getElementById('project-work-create-link');
     const statusToast = document.getElementById('assignment-status-toast');
+    const projectActivityOptions = formActivity
+        ? Array.from(formActivity.options).filter(function (option) {
+            return option.value;
+        }).map(function (option) {
+            return option.cloneNode(true);
+        })
+        : [];
+    const workTypeOptions = Array.isArray(window.assignmentWorkTypes) ? window.assignmentWorkTypes : [];
 
     function renderAssignments() {
         const query = (search?.value || '').toLowerCase().trim();
@@ -87,15 +97,49 @@
             return;
         }
 
-        Array.from(formActivity.options).forEach(function (option) {
-            if (!option.value) {
+        let visibleActivities = 0;
+
+        while (formActivity.options.length > 1) {
+            formActivity.remove(1);
+        }
+
+        projectActivityOptions.forEach(function (option) {
+            if (option.dataset.project !== formProject.value) {
                 return;
             }
 
-            option.hidden = option.dataset.project !== formProject.value;
+            formActivity.appendChild(option.cloneNode(true));
+            visibleActivities++;
         });
 
-        formActivity.value = '';
+        if (formProject.value && visibleActivities === 0) {
+            workTypeOptions.forEach(function (workType) {
+                const option = document.createElement('option');
+                option.value = 'type:' + workType.id;
+                option.dataset.mode = workType.activity_mode;
+                option.dataset.tracking = workType.activity_mode === 'continuous_tracking' ? '1' : '0';
+                option.textContent = workType.name;
+                formActivity.appendChild(option);
+                visibleActivities++;
+            });
+        }
+
+        formActivity.selectedIndex = 0;
+
+        if (projectWorkEmpty) {
+            projectWorkEmpty.hidden = !formProject.value || visibleActivities > 0;
+        }
+
+        if (projectWorkCreateLink) {
+            const url = new URL(projectWorkCreateLink.href, window.location.origin);
+            if (formProject.value) {
+                url.searchParams.set('project_id', formProject.value);
+            } else {
+                url.searchParams.delete('project_id');
+            }
+            projectWorkCreateLink.href = url.toString();
+        }
+
         updateActivityFields();
         filterFormWorkers();
     }

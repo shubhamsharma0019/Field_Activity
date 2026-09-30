@@ -50,7 +50,7 @@
 
         const photo = document.getElementById('detail-photo');
         if (photo) {
-            photo.style.backgroundImage = "linear-gradient(135deg, #1c3a4db0, #22927580), url('" + card.dataset.image + "')";
+            photo.style.backgroundImage = "url('" + card.dataset.image + "')";
         }
 
         if (reviewForm) {

@@ -133,7 +133,7 @@
 }
 
 .report-grid-bottom {
-    grid-template-columns: minmax(0, 1.45fr) minmax(300px, .8fr);
+    grid-template-columns: 1fr;
 }
 
 .report-panel {
@@ -393,26 +393,6 @@
 .status-rejected {
     color: #db3040;
     background: #ffe4e8;
-}
-
-.heat-map {
-    position: relative;
-    min-height: 235px;
-    overflow: hidden;
-    border: 1px solid #d8e5ef;
-    border-radius: 8px;
-    background:
-        linear-gradient(#ffffff99 1px, transparent 1px),
-        linear-gradient(90deg, #ffffff99 1px, transparent 1px),
-        linear-gradient(135deg, #dbeee6, #eef7fb);
-    background-size: 38px 38px, 38px 38px, auto;
-}
-
-.heat-point {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    background: radial-gradient(circle, #ef374dcc 0 25%, #ffbb2599 45%, transparent 72%);
 }
 
 .empty-state {

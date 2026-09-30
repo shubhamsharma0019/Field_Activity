@@ -144,12 +144,16 @@
             empty.hidden = visible > 0;
         }
 
-        const selected = rows.find(function (row) {
-            return row.classList.contains('selected') && !row.hidden;
+        const selectedHidden = rows.some(function (row) {
+            return row.classList.contains('selected') && row.hidden;
         });
 
-        if (!selected) {
-            selectSession(rows.find(function (row) { return !row.hidden; }));
+        if (selectedHidden) {
+            rows.forEach(function (row) { row.classList.remove('selected'); });
+            if (detailPanel) {
+                detailPanel.hidden = true;
+                document.body.classList.remove('session-detail-open');
+            }
         }
     }
 

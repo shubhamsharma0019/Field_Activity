@@ -83,7 +83,7 @@ class AssignmentPageController extends Controller
     {
         $validated = $request->validate([
             'project_id' => ['required', 'exists:projects,id'],
-            'project_activity_id' => ['required', 'exists:project_activities,id'],
+            'project_activity_id' => ['required', 'string'],
             'worker_id' => [
                 'required',
                 Rule::exists('users', 'id')->where(fn ($query) => $query->where('role', 'worker')),
@@ -93,9 +93,9 @@ class AssignmentPageController extends Controller
             'assigned_date' => ['required', 'date'],
         ]);
 
-        $activity = ProjectActivity::with('activityType')->findOrFail($validated['project_activity_id']);
         $project = Project::findOrFail($validated['project_id']);
         $worker = User::findOrFail($validated['worker_id']);
+        $activity = $this->resolveProjectActivity($validated['project_activity_id'], $project);
 
         if ((int) $activity->project_id !== (int) $validated['project_id']) {
             return back()
@@ -176,6 +176,25 @@ class AssignmentPageController extends Controller
                 $this->statusLabel($status),
             ])),
         ];
+    }
+
+    private function resolveProjectActivity(string $selectedActivity, Project $project): ProjectActivity
+    {
+        if (Str::startsWith($selectedActivity, 'type:')) {
+            $activityTypeId = (int) Str::after($selectedActivity, 'type:');
+            $activityType = ActivityType::query()
+                ->where('status', 'active')
+                ->findOrFail($activityTypeId);
+
+            return ProjectActivity::create([
+                'project_id' => $project->id,
+                'activity_type_id' => $activityType->id,
+                'name' => $activityType->name,
+                'status' => 'active',
+            ])->load('activityType');
+        }
+
+        return ProjectActivity::with('activityType')->findOrFail($selectedActivity);
     }
 
     private function modeLabel(string $mode): string
