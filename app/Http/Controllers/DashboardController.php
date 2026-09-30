@@ -115,12 +115,12 @@ class DashboardController extends Controller
 
         $rows = ProjectAssignment::query()
             ->select(
-                DB::raw('DATE(created_at) as activity_date'),
+                DB::raw('DATE(updated_at) as activity_date'),
                 DB::raw("SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed"),
-                DB::raw("SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress"),
-                DB::raw("SUM(CASE WHEN status IN ('assigned', 'pending_approval') THEN 1 ELSE 0 END) as pending")
+                DB::raw("SUM(CASE WHEN status IN ('assigned', 'in_progress') THEN 1 ELSE 0 END) as in_progress"),
+                DB::raw("SUM(CASE WHEN status = 'pending_approval' THEN 1 ELSE 0 END) as pending")
             )
-            ->whereBetween('created_at', [$start, $end])
+            ->whereBetween('updated_at', [$start, $end])
             ->groupBy('activity_date')
             ->get()
             ->keyBy('activity_date');
@@ -152,8 +152,8 @@ class DashboardController extends Controller
 
         return [
             'completed' => (int) ($counts['completed'] ?? 0),
-            'in_progress' => (int) ($counts['in_progress'] ?? 0),
-            'pending' => (int) ($counts['assigned'] ?? 0) + (int) ($counts['pending_approval'] ?? 0),
+            'in_progress' => (int) ($counts['assigned'] ?? 0) + (int) ($counts['in_progress'] ?? 0),
+            'pending' => (int) ($counts['pending_approval'] ?? 0),
         ];
     }
 
@@ -200,17 +200,22 @@ class DashboardController extends Controller
             ->limit(6)
             ->get()
             ->map(function (ActivitySubmission $submission): array {
+                $project = $submission->assignment?->project;
+                $location = filled($submission->latitude) && filled($submission->longitude)
+                    ? $submission->latitude . ', ' . $submission->longitude
+                    : collect([$project?->area, $project?->city, $project?->state])->filter()->join(', ');
+
                 return [
                     'id' => $submission->id,
                     'activity' => $submission->assignment?->projectActivity?->name ?? 'Evidence Submission',
-                    'project' => $submission->assignment?->project?->name ?? 'No Project',
+                    'project' => $project?->name ?? 'No Project',
                     'worker' => $submission->worker?->name ?? 'Worker',
                     'submitted_at' => $submission->server_timestamp?->format('d M Y, h:i A')
                         ?? $submission->created_at?->format('d M Y, h:i A')
                         ?? '-',
                     'status' => $this->statusLabel($submission->approval_status),
                     'color' => $this->statusColor($submission->approval_status),
-                    'location' => $submission->latitude . ', ' . $submission->longitude,
+                    'location' => $location ?: 'Location not available',
                     'description' => 'Submission #' . $submission->submission_no
                         . ' - ' . $this->statusLabel($submission->approval_status)
                         . ' - ' . ($submission->remark ?: 'No remark'),

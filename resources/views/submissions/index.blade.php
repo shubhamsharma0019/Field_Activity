@@ -42,7 +42,7 @@
                 <label class="submission-search"><svg class="icon"><use href="#search"/></svg><input id="submission-search" placeholder="Search by assignment, worker or location..."></label>
                 <select id="submission-company"><option value="all">All Companies</option><option value="internal">Internal</option>@foreach ($companies as $company)<option value="{{ $company->id }}">{{ $company->name }}</option>@endforeach</select>
                 <select id="submission-project"><option value="all">All Projects</option>@foreach ($projects as $project)<option value="{{ $project->id }}">{{ $project->name }}</option>@endforeach</select>
-                <select id="submission-activity-type"><option value="all">All Activity Types</option>@foreach ($activityTypes as $type)<option value="{{ $type->id }}">{{ $type->name }}</option>@endforeach</select>
+                <select id="submission-activity-type"><option value="all">All Work Types</option>@foreach ($activityTypes as $type)<option value="{{ $type->id }}">{{ $type->name }}</option>@endforeach</select>
                 <select id="submission-status"><option value="all">All Status</option><option value="pending">Pending Review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>
                 <button type="button" id="submission-reset">Reset</button>
             </div>
@@ -96,9 +96,9 @@
         <aside class="submission-detail">
             <div class="detail-heading"><h2>Submission Details</h2><button type="button" aria-label="Close details">x</button></div>
             <div class="detail-photo" id="detail-photo"></div>
-            <section class="detail-section"><h3>Assignment</h3><table class="detail-table"><tr><td>Title</td><td id="detail-title">Select a submission</td></tr><tr><td>Project</td><td id="detail-project">N/A</td></tr><tr><td>Activity Type</td><td id="detail-activity-type">N/A</td></tr><tr><td>Activity Mode</td><td id="detail-mode">N/A</td></tr></table></section>
+            <section class="detail-section"><h3>Assignment</h3><table class="detail-table"><tr><td>Title</td><td id="detail-title">Select a submission</td></tr><tr><td>Project</td><td id="detail-project">N/A</td></tr><tr><td>Work Type</td><td id="detail-activity-type">N/A</td></tr><tr><td>Work Mode</td><td id="detail-mode">N/A</td></tr></table></section>
             <section class="detail-section"><h3>Worker Information</h3><table class="detail-table"><tr><td>Worker</td><td id="detail-worker">N/A</td></tr><tr><td>Mobile</td><td id="detail-mobile">N/A</td></tr></table></section>
-            <section class="detail-section"><h3>Location & Time</h3><table class="detail-table"><tr><td>Location</td><td id="detail-location">N/A</td></tr><tr><td>GPS</td><td id="detail-gps">N/A</td></tr><tr><td>Submitted</td><td id="detail-time">N/A</td></tr><tr><td>Status</td><td id="detail-status">N/A</td></tr></table></section>
+            <section class="detail-section"><h3>Location & Time</h3><table class="detail-table"><tr><td>Location</td><td id="detail-location">N/A</td></tr><tr><td>GPS</td><td id="detail-gps">N/A</td></tr><tr><td>Submitted</td><td id="detail-time">N/A</td></tr><tr><td>Status</td><td id="detail-status">N/A</td></tr></table><a class="map-link" id="detail-map-link" href="#" target="_blank" rel="noopener">Open Location on Map</a></section>
             <section class="detail-section"><h3>Remark</h3><p class="detail-note" id="detail-remark">No remark added.</p></section>
             <section class="detail-section"><h3>Review Comment</h3><textarea class="comment-box" id="submission-comment" name="rejection_reason" form="submission-review-form" maxlength="500" placeholder="Add review comments..."></textarea><span class="comment-count" id="comment-count">0/500</span></section>
             <form id="submission-review-form" method="POST" action="">

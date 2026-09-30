@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityType;
+use App\Models\Project;
+use App\Models\ProjectActivity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -48,6 +51,10 @@ class ActivityTypePageController extends Controller
         return view('activity_types.index', [
             'stats' => $stats,
             'activities' => $activities,
+            'projects' => Project::query()
+                ->whereIn('status', ['active', 'draft'])
+                ->orderBy('name')
+                ->get(['id', 'name', 'start_date', 'end_date']),
         ]);
     }
 
@@ -61,20 +68,60 @@ class ActivityTypePageController extends Controller
             ],
             'tracking_required' => ['nullable', 'boolean'],
             'status' => ['nullable', Rule::in(['active', 'inactive'])],
+            'create_project_work' => ['nullable', 'boolean'],
+            'project_id' => ['nullable', 'required_if:create_project_work,1', 'exists:projects,id'],
+            'project_work_name' => ['nullable', 'required_if:create_project_work,1', 'string', 'max:150'],
+            'target_quantity' => ['nullable', 'integer', 'min:1'],
+            'expected_duration_minutes' => ['nullable', 'integer', 'min:1'],
+            'instructions' => ['nullable', 'string', 'max:1000'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
         ]);
 
-        if ($validated['activity_mode'] === 'continuous_tracking') {
-            $validated['tracking_required'] = true;
+        if (! empty($validated['create_project_work'])) {
+            $project = Project::findOrFail($validated['project_id']);
+
+            if (! empty($validated['start_date']) && $project->start_date && $validated['start_date'] < $project->start_date->toDateString()) {
+                return back()->withErrors(['start_date' => 'Work start date cannot be before project start date.'])->withInput();
+            }
+
+            if (! empty($validated['end_date']) && $project->end_date && $validated['end_date'] > $project->end_date->toDateString()) {
+                return back()->withErrors(['end_date' => 'Work end date cannot be after project end date.'])->withInput();
+            }
         }
 
-        $validated['tracking_required'] = (bool) ($validated['tracking_required'] ?? false);
-        $validated['status'] = $validated['status'] ?? 'active';
+        $typeData = [
+            'name' => $validated['name'],
+            'activity_mode' => $validated['activity_mode'],
+            'tracking_required' => $validated['activity_mode'] === 'continuous_tracking'
+                ? true
+                : (bool) ($validated['tracking_required'] ?? false),
+            'status' => $validated['status'] ?? 'active',
+        ];
 
-        ActivityType::create($validated);
+        DB::transaction(function () use ($typeData, $validated): void {
+            $activityType = ActivityType::create($typeData);
+
+            if (empty($validated['create_project_work'])) {
+                return;
+            }
+
+            ProjectActivity::create([
+                'project_id' => $validated['project_id'],
+                'activity_type_id' => $activityType->id,
+                'name' => $validated['project_work_name'],
+                'target_quantity' => $validated['target_quantity'] ?? null,
+                'expected_duration_minutes' => $validated['expected_duration_minutes'] ?? null,
+                'instructions' => $validated['instructions'] ?? null,
+                'start_date' => $validated['start_date'] ?? null,
+                'end_date' => $validated['end_date'] ?? null,
+                'status' => 'active',
+            ]);
+        });
 
         return redirect()
             ->route('web.activity-types.index')
-            ->with('status', 'Activity type created successfully.');
+            ->with('status', empty($validated['create_project_work']) ? 'Work type created successfully.' : 'Work type and project work created successfully.');
     }
 
     private function modeLabel(string $mode): string

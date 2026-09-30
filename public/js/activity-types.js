@@ -11,6 +11,13 @@
     const description = document.getElementById('activity-description');
     const descriptionCount = document.getElementById('activity-description-count');
     const trackingRequired = document.getElementById('tracking-required');
+    const createProjectWork = document.getElementById('create-project-work');
+    const projectWorkFields = document.getElementById('project-work-fields');
+    const projectSelect = document.getElementById('project-work-project');
+    const projectWorkName = document.querySelector('[name="project_work_name"]');
+    const startInput = document.querySelector('[name="start_date"]');
+    const endInput = document.querySelector('[name="end_date"]');
+    const projectDateNote = document.querySelector('.project-date-note');
 
     function renderActivities() {
         const query = (search?.value || '').toLowerCase().trim();
@@ -37,7 +44,7 @@
         }
 
         if (count) {
-            count.textContent = visibleRows + ' of ' + rows.length + ' activity types';
+            count.textContent = visibleRows + ' of ' + rows.length + ' work types';
         }
     }
 
@@ -52,6 +59,7 @@
     function showForm() {
         if (formPanel) {
             formPanel.hidden = false;
+            document.body.classList.add('activity-modal-open');
             document.getElementById('activity-name')?.focus();
         }
     }
@@ -59,6 +67,7 @@
     function hideForm() {
         if (formPanel) {
             formPanel.hidden = true;
+            document.body.classList.remove('activity-modal-open');
         }
     }
 
@@ -78,12 +87,65 @@
         trackingRequired.disabled = false;
     }
 
+    function syncProjectWorkFields() {
+        const enabled = Boolean(createProjectWork?.checked);
+
+        if (projectWorkFields) {
+            projectWorkFields.hidden = !enabled;
+        }
+
+        if (projectSelect) {
+            projectSelect.required = enabled;
+        }
+
+        if (projectWorkName) {
+            projectWorkName.required = enabled;
+        }
+    }
+
+    function syncProjectDates() {
+        const selected = projectSelect?.selectedOptions?.[0];
+        if (!selected || !selected.value) {
+            return;
+        }
+
+        const projectStart = selected.dataset.startDate || '';
+        const projectEnd = selected.dataset.endDate || '';
+
+        if (startInput) {
+            startInput.min = projectStart;
+            startInput.max = projectEnd;
+        }
+
+        if (endInput) {
+            endInput.min = startInput?.value || projectStart;
+            endInput.max = projectEnd;
+        }
+
+        if (projectDateNote) {
+            projectDateNote.textContent = projectStart && projectEnd ? 'Project range: ' + projectStart + ' to ' + projectEnd : '';
+        }
+    }
+
     search?.addEventListener('input', renderActivities);
     status?.addEventListener('change', renderActivities);
     description?.addEventListener('input', updateDescriptionCount);
     openForm?.addEventListener('click', showForm);
     closeForm?.addEventListener('click', hideForm);
     cancelForm?.addEventListener('click', hideForm);
+    createProjectWork?.addEventListener('change', syncProjectWorkFields);
+    projectSelect?.addEventListener('change', syncProjectDates);
+    startInput?.addEventListener('change', function () {
+        if (endInput && endInput.value && startInput.value && endInput.value < startInput.value) {
+            endInput.value = startInput.value;
+        }
+        syncProjectDates();
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && formPanel && !formPanel.hidden) {
+            hideForm();
+        }
+    });
 
     document.querySelectorAll('input[name="activity_mode"]').forEach(function (radio) {
         radio.addEventListener('change', syncTrackingForMode);
@@ -97,5 +159,7 @@
 
     updateDescriptionCount();
     syncTrackingForMode();
+    syncProjectWorkFields();
+    syncProjectDates();
     renderActivities();
 })();

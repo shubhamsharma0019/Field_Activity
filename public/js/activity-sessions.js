@@ -10,6 +10,34 @@
     const reviewForm = document.getElementById('session-review-form');
     const reviewStatus = document.getElementById('session-review-status');
     const reviewComment = document.getElementById('session-review-comment');
+    const detailPanel = document.getElementById('session-detail-panel');
+    const reviewButtons = Array.from(document.querySelectorAll('.session-review-actions button[data-status]'));
+
+    function mapUrl(gps) {
+        if (!gps || gps === 'Not completed') {
+            return '';
+        }
+
+        const parts = gps.split(',').map(function (part) { return part.trim(); });
+
+        if (parts.length < 2 || !parts[0] || !parts[1]) {
+            return '';
+        }
+
+        return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(parts[0] + ',' + parts[1]);
+    }
+
+    function setMapLink(id, gps) {
+        const link = document.getElementById(id);
+        const url = mapUrl(gps);
+
+        if (!link) {
+            return;
+        }
+
+        link.hidden = !url;
+        link.href = url || '#';
+    }
 
     function setText(id, value) {
         const element = document.getElementById(id);
@@ -37,16 +65,20 @@
         setText('detail-start-gps', row.dataset.startGps);
         setText('detail-end-gps', row.dataset.endGps);
         setText('detail-status', row.dataset.statusLabel);
+        setMapLink('detail-start-map', row.dataset.startGps);
+        setMapLink('detail-end-map', row.dataset.endGps);
 
         const startEvidence = document.getElementById('start-evidence');
         const endEvidence = document.getElementById('end-evidence');
 
         if (startEvidence) {
             startEvidence.style.backgroundImage = "url('" + row.dataset.startImage + "')";
+            startEvidence.href = row.dataset.startImage || '#';
         }
 
         if (endEvidence) {
             endEvidence.style.backgroundImage = "url('" + row.dataset.endImage + "')";
+            endEvidence.href = row.dataset.endImage || '#';
         }
 
         const timeline = document.getElementById('detail-timeline');
@@ -65,6 +97,21 @@
 
         if (reviewComment) {
             reviewComment.value = row.dataset.rejectionReason || '';
+        }
+
+        const canReview = row.dataset.status === 'pending_approval';
+        reviewButtons.forEach(function (button) {
+            button.disabled = !canReview;
+        });
+
+        if (reviewComment) {
+            reviewComment.disabled = !canReview;
+            reviewComment.placeholder = canReview ? 'Add review comment...' : 'Only pending review sessions can be approved or rejected.';
+        }
+
+        if (detailPanel) {
+            detailPanel.hidden = false;
+            document.body.classList.add('session-detail-open');
         }
     }
 
@@ -130,7 +177,21 @@
         renderSessions();
     });
 
-    document.querySelectorAll('.session-review-actions button[data-status]').forEach(function (button) {
+    document.getElementById('close-session-detail')?.addEventListener('click', function () {
+        if (detailPanel) {
+            detailPanel.hidden = true;
+            document.body.classList.remove('session-detail-open');
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && detailPanel && !detailPanel.hidden) {
+            detailPanel.hidden = true;
+            document.body.classList.remove('session-detail-open');
+        }
+    });
+
+    reviewButtons.forEach(function (button) {
         button.addEventListener('click', function () {
             if (reviewStatus) {
                 reviewStatus.value = button.dataset.status;
@@ -138,6 +199,5 @@
         });
     });
 
-    selectSession(rows[0]);
     renderSessions();
 })();

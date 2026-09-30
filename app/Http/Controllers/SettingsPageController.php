@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivitySubmission;
+use App\Models\ActivitySession;
 use App\Models\Company;
 use App\Models\Project;
 use App\Models\ProjectAssignment;
@@ -20,49 +21,47 @@ class SettingsPageController extends Controller
 {
     public function index(): View
     {
+        $workers = User::query()->where('role', 'worker');
+        $activeWorkers = (clone $workers)
+            ->whereHas('activitySessions', fn ($query) => $query->where('status', 'in_progress'))
+            ->count();
+
         return view('settings.index', [
             'settings' => $this->settings(),
             'canPersistSettings' => Schema::hasTable('system_settings'),
             'systemStats' => [
                 'companies' => Company::count(),
                 'projects' => Project::count(),
-                'users' => User::count(),
+                'workers' => $workers->count(),
+                'active_workers' => $activeWorkers,
                 'assignments' => ProjectAssignment::count(),
                 'submissions' => ActivitySubmission::count(),
+                'sessions' => ActivitySession::count(),
+                'pending_reviews' => ActivitySubmission::where('approval_status', 'pending')->count()
+                    + ActivitySession::where('status', 'pending_approval')->count(),
             ],
         ]);
     }
 
     public function update(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = array_merge($this->settings(), $request->validate([
             'organization_name' => ['required', 'string', 'max:150'],
-            'organization_type' => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:150'],
             'phone' => ['nullable', 'string', 'max:30'],
-            'address' => ['nullable', 'string', 'max:500'],
             'city' => ['nullable', 'string', 'max:80'],
-            'country' => ['nullable', 'string', 'max:80'],
             'timezone' => ['required', 'string', 'max:80'],
-            'date_format' => ['required', 'string', 'max:30'],
-            'time_format' => ['required', 'string', 'max:30'],
             'map_provider' => ['required', 'string', 'max:50'],
-            'default_view' => ['required', 'string', 'max:50'],
             'session_auto_end_hours' => ['required', 'integer', 'min:1', 'max:72'],
-            'photo_compression' => ['required', 'string', 'max:50'],
-            'default_language' => ['required', 'string', 'max:50'],
             'location_accuracy_meters' => ['required', 'integer', 'min:1', 'max:500'],
-        ]);
+        ]));
 
         $booleanKeys = [
             'require_location_submissions',
-            'allow_manual_location',
             'track_location_during_session',
             'new_submission_alert',
             'assignment_update_alert',
             'session_alert',
-            'report_generation_alert',
-            'maintenance_alert',
         ];
 
         foreach ($booleanKeys as $key) {

@@ -17,24 +17,7 @@
         }
 
         .breadcrumbs {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            margin: 3px 0 24px;
-            color: #74839a;
-            font-size: 13px;
-        }
-
-        .breadcrumbs a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #3e5a82;
-        }
-
-        .breadcrumbs .icon {
-            width: 18px;
-            color: #1768ee;
+            display: none !important;
         }
 
         main h1 {
@@ -61,20 +44,6 @@
 
             main h1 {
                 font-size: 20px !important;
-            }
-
-            .breadcrumbs {
-                gap: 10px;
-                margin: 2px 0 16px;
-                font-size: 10px;
-            }
-
-            .breadcrumbs a {
-                gap: 6px;
-            }
-
-            .breadcrumbs .icon {
-                width: 15px;
             }
 
             .page-heading,
@@ -155,7 +124,47 @@
             ->take(2)
             ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
             ->implode('') ?: 'AD';
-        $topbarNotificationCount = $notificationCount ?? 0;
+        $pendingSubmissions = \App\Models\ActivitySubmission::query()
+            ->where('approval_status', 'pending')
+            ->latest('server_timestamp')
+            ->limit(3)
+            ->get(['id', 'worker_id', 'assignment_id', 'server_timestamp']);
+        $pendingSessions = \App\Models\ActivitySession::query()
+            ->where('status', 'pending_approval')
+            ->latest('completed_at')
+            ->limit(3)
+            ->get(['id', 'worker_id', 'assignment_id', 'completed_at']);
+        $topbarNotificationCount = ($notificationCount ?? null)
+            ?? (\App\Models\ActivitySubmission::query()->where('approval_status', 'pending')->count()
+                + \App\Models\ActivitySession::query()->where('status', 'pending_approval')->count());
+        $globalSearchItems = collect([
+            ['label' => 'Dashboard', 'group' => 'Page', 'url' => route('web.dashboard')],
+            ['label' => 'Companies', 'group' => 'Page', 'url' => route('web.companies.index')],
+            ['label' => 'Users / Workers', 'group' => 'Page', 'url' => route('web.users.index')],
+            ['label' => 'Projects', 'group' => 'Page', 'url' => route('web.projects.index')],
+            ['label' => 'Work Types', 'group' => 'Page', 'url' => route('web.activity-types.index')],
+            ['label' => 'Assignments', 'group' => 'Page', 'url' => route('web.assignments.index')],
+            ['label' => 'Submissions', 'group' => 'Page', 'url' => route('web.submissions.index')],
+            ['label' => 'Activity Sessions', 'group' => 'Page', 'url' => route('web.activity-sessions.index')],
+            ['label' => 'Live Worker Tracking', 'group' => 'Map', 'url' => route('web.activity-sessions.live')],
+            ['label' => 'Full Location Map', 'group' => 'Map', 'url' => route('web.activity-sessions.map')],
+            ['label' => 'Activity Updates', 'group' => 'Page', 'url' => route('web.activity-updates.index')],
+            ['label' => 'Reports', 'group' => 'Page', 'url' => route('web.reports.index')],
+            ['label' => 'Settings', 'group' => 'Page', 'url' => route('web.settings.index')],
+        ])
+            ->merge(\App\Models\Project::query()->latest()->limit(6)->get(['id', 'name', 'project_code'])->map(fn ($project) => [
+                'label' => $project->name,
+                'group' => 'Project',
+                'meta' => $project->project_code,
+                'url' => route('web.projects.index'),
+            ]))
+            ->merge(\App\Models\User::query()->where('role', 'worker')->latest()->limit(6)->get(['id', 'name', 'mobile'])->map(fn ($worker) => [
+                'label' => $worker->name,
+                'group' => 'Worker',
+                'meta' => $worker->mobile,
+                'url' => route('web.users.index'),
+            ]))
+            ->values();
     @endphp
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
     <a class="brand" href="{{ route('web.dashboard') }}">
@@ -165,20 +174,20 @@
     @php
         $menuItems = [
             ['Dashboard', 'home'], ['Companies', 'building'], ['Users', 'users'],
-            ['Projects', 'folder'], ['Activity Types', 'list'],
+            ['Projects', 'folder'], ['Work Types', 'list'],
             ['Assignments', 'clipboard'], ['Submissions', 'image'], ['Activity Sessions', 'clock'],
             ['Activity Updates', 'pulse'], ['Reports', 'chart'], ['Settings', 'settings'],
         ];
     @endphp
     <nav class="navigation">
         @foreach ($menuItems as [$label, $icon])
-            @if (in_array($label, ['Dashboard', 'Companies', 'Users', 'Projects', 'Activity Types', 'Assignments', 'Submissions', 'Activity Sessions', 'Activity Updates', 'Reports', 'Settings'], true))
+            @if (in_array($label, ['Dashboard', 'Companies', 'Users', 'Projects', 'Work Types', 'Assignments', 'Submissions', 'Activity Sessions', 'Activity Updates', 'Reports', 'Settings'], true))
                 @php
                     $menuRoute = match ($label) {
                         'Dashboard' => 'web.dashboard',
                         'Companies' => 'web.companies.index',
                         'Users' => 'web.users.index',
-                        'Activity Types' => 'web.activity-types.index',
+                        'Work Types' => 'web.activity-types.index',
                         'Assignments' => 'web.assignments.index',
                         'Submissions' => 'web.submissions.index',
                         'Activity Sessions' => 'web.activity-sessions.index',
@@ -216,7 +225,7 @@
         @elseif (request()->routeIs('web.projects.*'))
             <p><strong>Manage<br>Projects</strong><br><small>Create, assign and<br>track activities</small></p>
         @elseif (request()->routeIs('web.activity-types.*'))
-            <p><strong>Manage<br>Activity Types</strong><br><small>Define and configure<br>field activities</small></p>
+            <p><strong>Manage<br>Work Types</strong><br><small>Reusable templates<br>for project work</small></p>
         @elseif (request()->routeIs('web.assignments.*'))
             <p><strong>Assign &amp;<br>Track Field Work</strong><br><small>Manage your field<br>operations efficiently</small></p>
         @elseif (request()->routeIs('web.submissions.*'))
@@ -237,18 +246,46 @@
     <button class="sidebar-overlay" id="sidebar-overlay" aria-label="Close navigation"></button>
     <div class="workspace">
         <header class="topbar">
+    <div class="topbar-search-wrap">
     <label class="search-box" for="dashboard-search">
         <svg class="icon" aria-hidden="true"><use href="#search"/></svg>
-        <input id="dashboard-search" type="search" placeholder="Search anything..." aria-label="Search current page">
+        <input id="dashboard-search" type="search" placeholder="Search anything..." aria-label="Search pages, projects and workers" autocomplete="off">
         <kbd>Ctrl + K</kbd>
     </label>
+        <div class="topbar-search-results" id="topbar-search-results" hidden></div>
+    </div>
     <div class="topbar-actions">
-        <button class="icon-button notification-button" type="button" data-detail="Notifications" data-description="{{ $topbarNotificationCount }} pending items need attention." aria-label="Notifications, {{ $topbarNotificationCount }} pending items"><svg class="icon"><use href="#bell"/></svg>@if ($topbarNotificationCount > 0)<span class="notification-count">{{ $topbarNotificationCount }}</span>@endif</button>
+        <div class="topbar-menu">
+            <button class="icon-button notification-button" type="button" id="notification-toggle" aria-expanded="false" aria-controls="notification-menu" aria-label="Notifications, {{ $topbarNotificationCount }} pending items"><svg class="icon"><use href="#bell"/></svg>@if ($topbarNotificationCount > 0)<span class="notification-count">{{ $topbarNotificationCount }}</span>@endif</button>
+            <div class="topbar-dropdown notification-menu" id="notification-menu" hidden>
+                <div class="dropdown-heading"><strong>Notifications</strong><span>{{ $topbarNotificationCount }} pending</span></div>
+                @forelse($pendingSubmissions as $submission)
+                    <a href="{{ route('web.submissions.index') }}"><b>Submission review</b><small>Photo evidence is waiting for approval</small></a>
+                @empty
+                    @forelse($pendingSessions as $session)
+                        <a href="{{ route('web.activity-sessions.index') }}"><b>Session review</b><small>Start/end activity needs checking</small></a>
+                    @empty
+                        <p class="dropdown-empty">No pending work right now.</p>
+                    @endforelse
+                @endforelse
+                @if($pendingSubmissions->isNotEmpty() && $pendingSessions->isNotEmpty())
+                    @foreach($pendingSessions as $session)
+                        <a href="{{ route('web.activity-sessions.index') }}"><b>Session review</b><small>Start/end activity needs checking</small></a>
+                    @endforeach
+                @endif
+            </div>
+        </div>
         <button class="profile" type="button" data-detail="Admin profile" data-description="{{ $displayName }} · {{ $displayRole }}">
             <span class="avatar admin-avatar">{{ $avatarInitials }}</span>
             <span class="profile-text"><strong>{{ $displayName }}</strong><small>{{ $displayRole }}</small></span>
             <svg class="icon small"><use href="#chevron"/></svg>
         </button>
+        <div class="topbar-dropdown profile-menu" id="profile-menu" hidden>
+            <div class="dropdown-heading"><strong>{{ $displayName }}</strong><span>{{ $authUser?->email ?? $displayRole }}</span></div>
+            <a href="{{ route('web.settings.index') }}"><b>Settings</b><small>System controls</small></a>
+            <a href="{{ route('web.reports.index') }}"><b>Reports</b><small>Performance summary</small></a>
+            <form method="POST" action="{{ route('admin.logout') }}">@csrf<button type="submit">Logout</button></form>
+        </div>
     </div>
 </header>
         <main class="page-content">@yield('content')</main>
@@ -258,6 +295,9 @@
         <h2 id="dialog-title"></h2>
         <p id="dialog-text"></p>
     </dialog>
+    <script>
+        window.globalSearchItems = @json($globalSearchItems);
+    </script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
     @stack('scripts')
 </body>

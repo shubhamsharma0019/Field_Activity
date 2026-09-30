@@ -118,14 +118,14 @@ class SubmissionPageController extends Controller
             'latitude' => $submission->latitude,
             'longitude' => $submission->longitude,
             'accuracy' => $submission->location_accuracy,
-            'submitted_at' => $submittedAt?->format('d M Y, h:i A') ?? 'N/A',
+            'submitted_at' => $this->formatDateTime($submittedAt),
             'photo_count' => '1 photo',
             'image_url' => $submission->image_url ?: asset('images/admin-construction.jpg'),
             'status' => $submission->approval_status,
             'status_label' => $this->statusLabel($submission->approval_status),
             'remark' => $submission->remark ?: 'No remark added.',
             'reviewer' => $submission->reviewer?->name,
-            'reviewed_at' => $submission->reviewed_at?->format('d M Y, h:i A'),
+            'reviewed_at' => $this->formatDateTime($submission->reviewed_at),
             'rejection_reason' => $submission->rejection_reason,
             'search' => Str::lower(implode(' ', [
                 $projectActivity?->name,
@@ -145,6 +145,13 @@ class SubmissionPageController extends Controller
         $parts = array_filter([$project?->area, $project?->city, $project?->state]);
 
         return $parts ? implode(', ', $parts) : $submission->latitude . ', ' . $submission->longitude;
+    }
+
+    private function formatDateTime(mixed $dateTime): string
+    {
+        return $dateTime
+            ? $dateTime->copy()->timezone('Asia/Kolkata')->format('d M Y, h:i A')
+            : 'N/A';
     }
 
     private function modeLabel(string $mode): string

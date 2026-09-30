@@ -66,7 +66,7 @@ class AssignmentPageController extends Controller
             ->where('role', 'worker')
             ->where('status', 'active')
             ->orderBy('name')
-            ->get(['id', 'name', 'mobile', 'email']);
+            ->get(['id', 'name', 'mobile', 'email', 'company_id']);
 
         return view('assignments.index', [
             'stats' => $stats,
@@ -139,7 +139,7 @@ class AssignmentPageController extends Controller
 
         return redirect()
             ->route('web.assignments.index')
-            ->with('status', 'Assignment created successfully.');
+            ->with('status', 'Assignment successfully created and assigned to worker.');
     }
 
     private function assignmentRow(ProjectAssignment $assignment): array

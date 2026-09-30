@@ -59,6 +59,41 @@
     font: inherit;
     font-size: 12px;
 }
+.user-filters .company-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid #dce5ef;
+    border-radius: 8px;
+    background: #fbfdff;
+}
+.user-filters .company-search .icon {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    color: #55708f;
+}
+.user-filters .company-search input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #1b2d48;
+    font: inherit;
+    font-size: 13px;
+}
+.user-filters .company-search input::placeholder {
+    color: #6b7d92;
+}
+.user-filters .company-search:focus-within {
+    border-color: #1d70ed;
+    box-shadow: 0 0 0 3px #b8d3fb66;
+}
 .reset-button {
     border: 0;
     border-radius: 7px;

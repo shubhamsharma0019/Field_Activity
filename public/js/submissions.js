@@ -39,6 +39,15 @@
         setText('detail-status', card.dataset.statusLabel);
         setText('detail-remark', card.dataset.remark);
 
+        const mapLink = document.getElementById('detail-map-link');
+        if (mapLink) {
+            const hasGps = card.dataset.latitude && card.dataset.longitude;
+            mapLink.hidden = !hasGps;
+            mapLink.href = hasGps
+                ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(card.dataset.latitude + ',' + card.dataset.longitude)
+                : '#';
+        }
+
         const photo = document.getElementById('detail-photo');
         if (photo) {
             photo.style.backgroundImage = "linear-gradient(135deg, #1c3a4db0, #22927580), url('" + card.dataset.image + "')";

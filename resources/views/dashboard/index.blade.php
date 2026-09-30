@@ -146,11 +146,8 @@
             <a class="shortcut {{ $shortcut['color'] }}" href="{{ route($shortcut['route']) }}"><span class="shortcut-icon"><svg class="icon"><use href="#{{ $shortcut['icon'] }}"/></svg></span><span><strong>{{ $shortcut['title'] }}</strong><small>{{ $shortcut['description'] }}</small></span><span class="shortcut-arrow">→</span></a>
         @endforeach
     </div>
-@endsection
-
-@push('scripts')
     <script>
         window.dashboardChartData = @json($chartData);
         window.dashboardStatusSummary = @json($statusSummary);
     </script>
-@endpush
+@endsection

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivitySession;
+use App\Models\ActivitySubmission;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\User;
+use App\Models\WorkerLocation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -13,6 +16,114 @@ use Illuminate\View\View;
 
 class ActivitySessionPageController extends Controller
 {
+    public function liveTracking(): View
+    {
+        return view('activity_sessions.live', $this->liveTrackingPayload());
+    }
+
+    public function fullMap(): View
+    {
+        return view('activity_sessions.map', $this->liveTrackingPayload());
+    }
+
+    private function liveTrackingPayload(): array
+    {
+        $workers = User::query()
+            ->with([
+                'company:id,name',
+                'assignments' => fn ($query) => $query
+                    ->with([
+                        'project:id,name,company_id,city,state',
+                        'project.company:id,name',
+                        'projectActivity:id,name,activity_type_id',
+                        'projectActivity.activityType:id,name,activity_mode',
+                    ])
+                    ->whereIn('status', ['assigned', 'in_progress', 'pending_approval'])
+                    ->latest('started_at')
+                    ->latest('assigned_date'),
+            ])
+            ->where('role', 'worker')
+            ->orderBy('name')
+            ->get();
+
+        $latestLocations = WorkerLocation::query()
+            ->with([
+                'assignment.project:id,name,company_id,city,state',
+                'assignment.project.company:id,name',
+                'assignment.projectActivity:id,name,activity_type_id',
+                'assignment.projectActivity.activityType:id,name,activity_mode',
+            ])
+            ->whereIn('worker_id', $workers->pluck('id'))
+            ->latest('recorded_at')
+            ->get()
+            ->unique('worker_id')
+            ->keyBy('worker_id');
+
+        $latestSessions = ActivitySession::query()
+            ->with([
+                'assignment.project:id,name,company_id,city,state',
+                'assignment.project.company:id,name',
+                'assignment.projectActivity:id,name,activity_type_id',
+                'assignment.projectActivity.activityType:id,name,activity_mode',
+            ])
+            ->whereIn('worker_id', $workers->pluck('id'))
+            ->latest('started_at')
+            ->get()
+            ->unique('worker_id')
+            ->keyBy('worker_id');
+
+        $latestSubmissions = ActivitySubmission::query()
+            ->with([
+                'assignment.project:id,name,company_id,city,state',
+                'assignment.project.company:id,name',
+                'assignment.projectActivity:id,name,activity_type_id',
+                'assignment.projectActivity.activityType:id,name,activity_mode',
+            ])
+            ->whereIn('worker_id', $workers->pluck('id'))
+            ->latest('server_timestamp')
+            ->latest('id')
+            ->get()
+            ->unique('worker_id')
+            ->keyBy('worker_id');
+
+        $locationRoutes = WorkerLocation::query()
+            ->whereIn('worker_id', $workers->pluck('id'))
+            ->where('recorded_at', '>=', now()->subDay())
+            ->orderBy('recorded_at')
+            ->get()
+            ->groupBy('worker_id');
+
+        $workerRows = $workers
+            ->map(fn (User $worker): array => $this->liveWorkerRow(
+                $worker,
+                $latestLocations->get($worker->id),
+                $latestSessions->get($worker->id),
+                $latestSubmissions->get($worker->id),
+                $locationRoutes->get($worker->id, collect())
+            ))
+            ->values();
+
+        $activeCount = $workerRows->where('status', 'active')->count();
+        $breakCount = $workerRows->where('status', 'break')->count();
+        $offlineCount = $workerRows->where('status', 'offline')->count();
+
+        return [
+            'workers' => $workerRows,
+            'stats' => [
+                'total' => $workerRows->count(),
+                'active' => $activeCount,
+                'break' => $breakCount,
+                'offline' => $offlineCount,
+                'active_percent' => $workerRows->count() > 0 ? round($activeCount / $workerRows->count() * 100) : 0,
+            ],
+            'projects' => $workerRows
+                ->pluck('project')
+                ->filter(fn ($project) => $project !== 'No active project')
+                ->unique()
+                ->values(),
+        ];
+    }
+
     public function index(): View
     {
         $monthStart = now()->startOfMonth();
@@ -171,5 +282,94 @@ class ActivitySessionPageController extends Controller
             ->take(2)
             ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
             ->implode('') ?: 'WK';
+    }
+
+    private function liveWorkerRow(User $worker, ?WorkerLocation $location, ?ActivitySession $session, ?ActivitySubmission $submission, mixed $routeLocations): array
+    {
+        $assignment = $location?->assignment ?? $submission?->assignment ?? $session?->assignment ?? $worker->assignments->first();
+        $project = $assignment?->project;
+        $activity = $assignment?->projectActivity;
+        $activityType = $activity?->activityType;
+        $recordedAt = $location?->recorded_at ?? $session?->started_at;
+        $lastSeenMinutes = $recordedAt ? (int) $recordedAt->diffInMinutes(now()) : null;
+        $status = $this->trackingStatus($lastSeenMinutes, $assignment?->status);
+        $latitude = $location?->latitude ?? $submission?->latitude ?? $session?->end_latitude ?? $session?->start_latitude;
+        $longitude = $location?->longitude ?? $submission?->longitude ?? $session?->end_longitude ?? $session?->start_longitude;
+        $submissionAt = $submission?->device_timestamp ?? $submission?->server_timestamp ?? $submission?->created_at;
+
+        return [
+            'id' => $worker->id,
+            'name' => $worker->name,
+            'code' => 'USR' . str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT),
+            'mobile' => $worker->mobile ?? 'N/A',
+            'company' => $project?->company?->name ?? $worker->company?->name ?? 'Internal',
+            'initials' => $this->initials($worker->name),
+            'status' => $status,
+            'status_label' => $this->trackingStatusLabel($status),
+            'last_seen' => $recordedAt ? $recordedAt->diffForHumans() : 'No location yet',
+            'last_seen_minutes' => $lastSeenMinutes,
+            'latitude' => $latitude ? (float) $latitude : null,
+            'longitude' => $longitude ? (float) $longitude : null,
+            'accuracy' => $location?->accuracy,
+            'speed' => $location?->speed,
+            'heading' => $location?->heading,
+            'route' => $routeLocations
+                ->map(fn (WorkerLocation $point): array => [
+                    'lat' => (float) $point->latitude,
+                    'lng' => (float) $point->longitude,
+                    'time' => $point->recorded_at?->format('d M Y, h:i A'),
+                ])
+                ->values(),
+            'assignment' => $activity?->name ?? 'No active assignment',
+            'project' => $project?->name ?? 'No active project',
+            'activity_type' => $activityType?->name ?? 'N/A',
+            'activity_mode' => $this->modeLabel((string) ($activityType?->activity_mode ?? 'start_end')),
+            'started_at' => $assignment?->started_at?->format('d M Y, h:i A') ?? $session?->started_at?->format('d M Y, h:i A') ?? 'Not started',
+            'location_text' => $this->locationText($project, $latitude, $longitude),
+            'evidence_url' => $submission?->image_url ?? $session?->end_image_url ?? $session?->start_image_url ?? asset('images/admin-construction.jpg'),
+            'photo' => [
+                'url' => $submission?->image_url,
+                'lat' => $submission?->latitude ? (float) $submission->latitude : null,
+                'lng' => $submission?->longitude ? (float) $submission->longitude : null,
+                'accuracy' => $submission?->location_accuracy,
+                'time' => $submissionAt?->format('d M Y, h:i A'),
+                'remark' => $submission?->remark ?: 'No remark added.',
+                'status' => $submission?->approval_status,
+                'assignment' => $submission?->assignment?->projectActivity?->name,
+            ],
+        ];
+    }
+
+    private function trackingStatus(?int $lastSeenMinutes, ?string $assignmentStatus): string
+    {
+        if ($lastSeenMinutes === null) {
+            return 'offline';
+        }
+
+        if ($assignmentStatus === 'pending_approval') {
+            return 'break';
+        }
+
+        return $lastSeenMinutes <= 15 ? 'active' : ($lastSeenMinutes <= 60 ? 'break' : 'offline');
+    }
+
+    private function trackingStatusLabel(string $status): string
+    {
+        return match ($status) {
+            'active' => 'Active now',
+            'break' => 'Idle / pending',
+            default => 'Offline',
+        };
+    }
+
+    private function locationText(?Project $project, mixed $latitude, mixed $longitude): string
+    {
+        $parts = array_filter([$project?->city, $project?->state]);
+
+        if ($parts) {
+            return implode(', ', $parts);
+        }
+
+        return $latitude && $longitude ? $latitude . ', ' . $longitude : 'Location unavailable';
     }
 }

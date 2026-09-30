@@ -73,11 +73,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/activity-sessions/{session}/review', [ActivitySessionPageController::class, 'review'])->name('web.activity-sessions.review');
 
-    Route::view('/activity-sessions/live-tracking', 'activity_sessions.live')->name('web.activity-sessions.live');
+    Route::get('/activity-sessions/live-tracking', [ActivitySessionPageController::class, 'liveTracking'])->name('web.activity-sessions.live');
 
     Route::view('/activity-sessions/SES0001', 'activity_sessions.show')->name('web.activity-sessions.show');
 
-    Route::view('/activity-sessions/map', 'activity_sessions.map')->name('web.activity-sessions.map');
+    Route::get('/activity-sessions/map', [ActivitySessionPageController::class, 'fullMap'])->name('web.activity-sessions.map');
 
     Route::get('/reports', [ReportPageController::class, 'index'])->name('web.reports.index');
 

@@ -1,0 +1,36 @@
+.activity-form-card input[type=number],
+.activity-form-card input[type=date],
+.activity-form-card select {
+    width: 100%;
+    margin-top: 7px;
+    padding: 11px;
+    border: 1px solid #cfd9e5;
+    border-radius: 7px;
+    background: #fbfdff;
+    font: inherit;
+}
+
+.project-work-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 13px;
+    border: 1px solid #dce7f4;
+    border-radius: 9px;
+    background: #f8fbff;
+}
+
+.project-work-fields .wide-field {
+    grid-column: 1 / -1;
+}
+
+.project-work-fields .project-date-note {
+    position: static !important;
+    margin-left: 0 !important;
+}
+
+@media (max-width: 550px) {
+    .project-work-fields {
+        grid-template-columns: 1fr;
+    }
+}

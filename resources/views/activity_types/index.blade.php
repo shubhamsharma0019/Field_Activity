@@ -1,25 +1,26 @@
 @extends('layout.app')
 
-@section('title', 'Activity Types')
+@section('title', 'Work Types')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/activity-types.css') }}">
     <link rel="stylesheet" href="{{ asset('css/activity-types-fix.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/activity-types-merge.css') }}">
 @endpush
 
 @section('content')
     <nav class="breadcrumbs" aria-label="Breadcrumb">
         <a href="{{ route('web.dashboard') }}"><svg class="icon"><use href="#home"/></svg>Dashboard</a>
         <span>&rsaquo;</span>
-        <span>Activity Types</span>
+        <span>Work Types</span>
     </nav>
 
     <div class="page-heading activity-heading">
         <div>
-            <h1>Activity Types</h1>
-            <p>Create and manage different types of field activities for assignments.</p>
+            <h1>Work Types</h1>
+            <p>Reusable templates for field work, such as poster install, survey or tracking.</p>
         </div>
-        <button class="primary-button" id="open-activity-form" type="button"><span>+</span>Add New Activity Type</button>
+        <button class="primary-button" id="open-activity-form" type="button"><span>+</span>Add Work Type</button>
     </div>
 
     @if (session('status'))
@@ -35,7 +36,7 @@
     <div class="activity-stats">
         <article class="activity-stat blue">
             <span><svg class="icon"><use href="#list"/></svg></span>
-            <div><h2>Total Activity Types</h2><strong>{{ $stats['total'] }}</strong></div>
+            <div><h2>Total Work Types</h2><strong>{{ $stats['total'] }}</strong></div>
         </article>
         <article class="activity-stat green">
             <span><svg class="icon"><use href="#check"/></svg></span>
@@ -60,7 +61,7 @@
             <div class="activity-filters">
                 <label class="company-search">
                     <svg class="icon"><use href="#search"/></svg>
-                    <input id="activity-search" type="search" placeholder="Search activity types...">
+                    <input id="activity-search" type="search" placeholder="Search work types...">
                 </label>
                 <select id="activity-status">
                     <option value="all">All Status</option>
@@ -74,7 +75,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Activity Type</th>
+                            <th>Work Type</th>
                             <th>Description</th>
                             <th>Default Mode</th>
                             <th>Status</th>
@@ -107,31 +108,31 @@
                         @endforeach
                     </tbody>
                 </table>
-                <p id="activities-empty" class="empty-state" @if ($activities->isNotEmpty()) hidden @endif>No activity types found.</p>
+                <p id="activities-empty" class="empty-state" @if ($activities->isNotEmpty()) hidden @endif>No work types found.</p>
             </div>
 
             <div class="company-footer">
                 <label class="page-size">Show <select id="activity-page-size"><option selected>10</option></select> entries</label>
-                <span id="activity-count" class="company-count">{{ $activities->count() }} activity types</span>
+                <span id="activity-count" class="company-count">{{ $activities->count() }} work types</span>
             </div>
         </section>
 
         <aside id="activity-form-panel" class="activity-form-card" @if (! $errors->any()) hidden @endif>
             <div class="form-heading">
-                <h2>Add New Activity Type</h2>
-                <button id="close-activity-form" type="button" aria-label="Close activity type form">x</button>
+                <h2>Add Work Type</h2>
+                <button id="close-activity-form" type="button" aria-label="Close work type form">x</button>
             </div>
             <form id="activity-form" method="POST" action="{{ route('web.activity-types.store') }}">
                 @csrf
-                <label>Activity Name <em>*</em>
-                    <input id="activity-name" name="name" type="text" required maxlength="100" value="{{ old('name') }}" placeholder="Enter activity type name">
+                <label>Work Type Name <em>*</em>
+                    <input id="activity-name" name="name" type="text" required maxlength="100" value="{{ old('name') }}" placeholder="Enter work type name">
                 </label>
                 <label>Description
                     <textarea id="activity-description" maxlength="500" placeholder="Optional display note for admin planning">{{ old('description') }}</textarea>
                     <small id="activity-description-count">0/500</small>
                 </label>
                 <fieldset>
-                    <legend>Default Activity Mode <em>*</em></legend>
+                    <legend>Default Work Mode <em>*</em></legend>
                     <label><input type="radio" name="activity_mode" value="single_submission" @checked(old('activity_mode', 'single_submission') === 'single_submission')> Single Submission <small>Worker submits one time with photo and location</small></label>
                     <label><input type="radio" name="activity_mode" value="start_end" @checked(old('activity_mode') === 'start_end')> Start - End <small>Worker starts activity and ends it with time tracking</small></label>
                     <label><input type="radio" name="activity_mode" value="continuous_tracking" @checked(old('activity_mode') === 'continuous_tracking')> Continuous Tracking <small>Real-time location tracking during activity</small></label>
@@ -143,9 +144,41 @@
                     <input name="status" value="inactive" type="hidden">
                     <span><input id="activity-active" name="status" value="active" type="checkbox" @checked(old('status', 'active') === 'active')><i></i> Active</span>
                 </label>
+                <label class="switch-label project-work-toggle">Add to Project Now
+                    <span><input id="create-project-work" name="create_project_work" value="1" type="checkbox" @checked(old('create_project_work'))><i></i> Create Project Work</span>
+                </label>
+                <div class="project-work-fields" id="project-work-fields" @if (! old('create_project_work')) hidden @endif>
+                    <label>Project <em>*</em>
+                        <select name="project_id" id="project-work-project">
+                            <option value="" selected disabled>Select project</option>
+                            @foreach($projects as $project)
+                                <option value="{{ $project->id }}" data-start-date="{{ $project->start_date?->toDateString() }}" data-end-date="{{ $project->end_date?->toDateString() }}" @selected((string) old('project_id') === (string) $project->id)>{{ $project->name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <label>Project Work Name <em>*</em>
+                        <input name="project_work_name" value="{{ old('project_work_name') }}" maxlength="150" placeholder="Example: Poster pasting in Sector 18">
+                    </label>
+                    <label>Target Quantity
+                        <input name="target_quantity" value="{{ old('target_quantity') }}" type="number" min="1" placeholder="Example: 50">
+                    </label>
+                    <label>Expected Minutes
+                        <input name="expected_duration_minutes" value="{{ old('expected_duration_minutes') }}" type="number" min="1" placeholder="Optional">
+                    </label>
+                    <label>Start Date
+                        <input name="start_date" value="{{ old('start_date') }}" type="date">
+                        <small class="project-date-note"></small>
+                    </label>
+                    <label>End Date
+                        <input name="end_date" value="{{ old('end_date') }}" type="date">
+                    </label>
+                    <label class="wide-field">Instructions
+                        <textarea name="instructions" maxlength="1000" placeholder="Worker instructions...">{{ old('instructions') }}</textarea>
+                    </label>
+                </div>
                 <div class="activity-form-actions">
                     <button id="cancel-activity" class="secondary-button" type="button">Cancel</button>
-                    <button class="primary-button" type="submit">Create Activity Type</button>
+                    <button class="primary-button" type="submit">Create Work Type</button>
                 </div>
             </form>
         </aside>

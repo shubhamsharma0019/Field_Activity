@@ -35,6 +35,7 @@
 .comment-box { position: relative; width: 100%; height: 55px; padding: 10px; border: 1px solid #d4dfeb; border-radius: 6px; resize: none; font: inherit; font-size: 10px; }.comment-count { float: right; margin-top: -16px; margin-right: 7px; color: #667891; font-size: 9px; }
 .detail-actions { display: flex; gap: 8px; padding: 10px 14px 16px; }.detail-actions button { flex: 1; padding: 10px 6px; border-radius: 6px; font-size: 10px; }.reject-button { border: 1px solid #ef5260; color: #dc3040; background: #fff; }.approve-button { border: 0; color: #fff; background: #1c70ed; }.request-button { border: 0; color: #405573; background: #eaf1fb; }
 .detail-note { margin: 0; color: #4f6078; font-size: 11px; line-height: 1.5; }
+.map-link { display: inline-flex; margin-top: 8px; padding: 7px 10px; border-radius: 6px; background: #edf4ff; color: #1d6ff0; font-size: 10px; font-weight: 700; }
 .submission-stat > span .icon { width: 25px; height: 25px; }
 .empty-state { padding: 22px; text-align: center; color: #64748a; }
 @media (max-width: 1400px) { .submissions-layout { grid-template-columns: 1fr; }.submission-detail { max-width: none; }.submission-grid { grid-template-columns: repeat(4, 1fr); } }

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityReport;
+use App\Models\ActivitySession;
 use App\Models\ActivitySubmission;
-use App\Models\ActivityType;
 use App\Models\Company;
 use App\Models\Project;
 use App\Models\ProjectAssignment;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -16,6 +16,9 @@ class ReportPageController extends Controller
 {
     public function index(): View
     {
+        $periodStart = now()->startOfMonth();
+        $periodEnd = now()->endOfMonth();
+
         $assignments = ProjectAssignment::query()
             ->with(['project.company', 'projectActivity.activityType', 'worker'])
             ->get();
@@ -23,99 +26,219 @@ class ReportPageController extends Controller
         $submissions = ActivitySubmission::query()
             ->with(['assignment.project', 'assignment.projectActivity.activityType', 'worker'])
             ->latest('server_timestamp')
-            ->limit(8)
             ->get();
 
-        $stats = [
-            'total' => $assignments->count(),
-            'completed' => $assignments->where('status', 'completed')->count(),
-            'in_progress' => $assignments->whereIn('status', ['assigned', 'in_progress'])->count(),
-            'pending' => $assignments->where('status', 'pending_approval')->count(),
-            'rejected' => $submissions->where('approval_status', 'rejected')->count(),
-            'month_total' => $assignments->where('created_at', '>=', now()->startOfMonth())->count(),
-        ];
+        $sessions = ActivitySession::query()
+            ->with(['assignment.project', 'assignment.projectActivity.activityType', 'worker'])
+            ->get();
 
-        $activityDistribution = $assignments
-            ->groupBy(fn (ProjectAssignment $assignment) => $assignment->projectActivity?->activityType?->name ?? 'Activity')
-            ->map(fn ($items, $name) => [
-                'name' => $name,
-                'count' => $items->count(),
-                'percent' => $stats['total'] ? round($items->count() / $stats['total'] * 100) : 0,
-            ])
-            ->sortByDesc('count')
-            ->take(6)
-            ->values();
+        $reports = ActivityReport::query()
+            ->with(['assignment.project', 'assignment.projectActivity.activityType', 'worker'])
+            ->latest()
+            ->get();
 
-        $topWorkers = User::query()
+        $workers = User::query()
             ->where('role', 'worker')
-            ->withCount(['assignments as completed_assignments_count' => fn ($query) => $query->where('status', 'completed')])
-            ->orderByDesc('completed_assignments_count')
-            ->limit(5)
+            ->orderBy('name')
             ->get();
 
-        $projectPerformance = Project::query()
-            ->withCount('assignments')
-            ->withSum('assignments as completed_quantity', 'completed_quantity')
-            ->withSum('assignments as target_quantity', 'target_quantity')
-            ->orderByDesc('assignments_count')
-            ->limit(6)
-            ->get()
-            ->map(function (Project $project): array {
-                $target = (int) ($project->target_quantity ?? 0);
-                $completed = (int) ($project->completed_quantity ?? 0);
-
-                return [
-                    'name' => $project->name,
-                    'count' => (int) $project->assignments_count,
-                    'percent' => $target > 0 ? min(100, (int) round($completed / $target * 100)) : 0,
-                ];
-            });
-
-        $locationCounts = $assignments
-            ->groupBy(fn (ProjectAssignment $assignment) => $assignment->project?->city ?: $assignment->project?->state ?: 'Unknown')
-            ->map(fn ($items, $name) => ['name' => $name, 'count' => $items->count()])
-            ->sortByDesc('count')
-            ->take(6)
+        $reportRows = $assignments->map(fn (ProjectAssignment $assignment): array => $this->assignmentRow($assignment))
+            ->merge($submissions->map(fn (ActivitySubmission $submission): array => $this->submissionRow($submission)))
+            ->merge($sessions->map(fn (ActivitySession $session): array => $this->sessionRow($session)))
+            ->merge($reports->map(fn (ActivityReport $report): array => $this->issueRow($report)))
+            ->sortByDesc('timestamp')
             ->values();
-
-        $maxLocation = max(1, (int) $locationCounts->max('count'));
-
-        $recentSubmissions = $submissions->map(function (ActivitySubmission $submission): array {
-            $project = $submission->assignment?->project;
-
-            return [
-                'activity' => $submission->assignment?->projectActivity?->name ?? 'Activity',
-                'worker' => $submission->worker?->name ?? 'Worker',
-                'location' => $project?->area ?: $project?->city ?: 'GPS: ' . $submission->latitude . ', ' . $submission->longitude,
-                'submitted_at' => ($submission->device_timestamp ?? $submission->server_timestamp ?? $submission->created_at)?->format('d M Y, h:i A') ?? 'N/A',
-                'status' => $submission->approval_status,
-                'status_label' => Str::title($submission->approval_status === 'pending' ? 'Pending Review' : $submission->approval_status),
-            ];
-        });
-
-        $trend = collect(range(6, 0))->map(function (int $daysAgo): array {
-            $date = now()->subDays($daysAgo)->toDateString();
-
-            return [
-                'label' => now()->subDays($daysAgo)->format('d M'),
-                'completed' => ProjectAssignment::whereDate('updated_at', $date)->where('status', 'completed')->count(),
-                'in_progress' => ProjectAssignment::whereDate('updated_at', $date)->whereIn('status', ['assigned', 'in_progress'])->count(),
-                'pending' => ProjectAssignment::whereDate('updated_at', $date)->where('status', 'pending_approval')->count(),
-                'rejected' => ActivitySubmission::whereDate('updated_at', $date)->where('approval_status', 'rejected')->count(),
-            ];
-        });
 
         return view('reports.index', [
-            'stats' => $stats,
             'companies' => Company::query()->orderBy('name')->get(['id', 'name']),
             'projects' => Project::query()->orderBy('name')->get(['id', 'name', 'company_id']),
-            'activityDistribution' => $activityDistribution,
-            'topWorkers' => $topWorkers,
-            'projectPerformance' => $projectPerformance,
-            'locationCounts' => $locationCounts,
-            'maxLocation' => $maxLocation,
-            'recentSubmissions' => $recentSubmissions,
-            'trend' => $trend,
+            'periodStart' => $periodStart,
+            'periodEnd' => $periodEnd,
+            'workers' => $workers->map(fn (User $worker): array => [
+                'id' => $worker->id,
+                'name' => $worker->name,
+                'code' => 'USR'.str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT),
+            ]),
+            'reportRows' => $reportRows,
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function assignmentRow(ProjectAssignment $assignment): array
+    {
+        $project = $assignment->project;
+        $worker = $assignment->worker;
+        $status = $assignment->status;
+
+        return [
+            'id' => 'A'.$assignment->id,
+            'type' => 'assignment',
+            'title' => $assignment->projectActivity?->name ?? 'Assignment',
+            'activity_type' => $assignment->projectActivity?->activityType?->name ?? $assignment->projectActivity?->name ?? 'Activity',
+            'worker_id' => $worker?->id,
+            'worker' => $worker?->name ?? 'Unassigned',
+            'worker_code' => $worker ? 'USR'.str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT) : '-',
+            'company_id' => $project?->company_id,
+            'company' => $project?->company?->name ?? 'No Company',
+            'project_id' => $project?->id,
+            'project' => $project?->name ?? 'No Project',
+            'location' => $this->projectLocation($project),
+            'date' => ($assignment->assigned_date ?? $assignment->created_at)?->toDateString(),
+            'timestamp' => ($assignment->completed_at ?? $assignment->started_at ?? $assignment->updated_at ?? $assignment->created_at)?->toDateTimeString(),
+            'status' => $status,
+            'status_group' => $this->statusGroup($status),
+            'status_label' => $this->statusLabel($status),
+            'target' => (int) $assignment->target_quantity,
+            'completed' => (int) $assignment->completed_quantity,
+            'has_photo' => false,
+            'has_remark' => false,
+            'description' => 'Target '.$assignment->completed_quantity.'/'.$assignment->target_quantity,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function submissionRow(ActivitySubmission $submission): array
+    {
+        $assignment = $submission->assignment;
+        $project = $assignment?->project;
+        $worker = $submission->worker;
+        $status = $submission->approval_status;
+
+        return [
+            'id' => 'S'.$submission->id,
+            'type' => 'submission',
+            'title' => $assignment?->projectActivity?->name ?? 'Photo Submission',
+            'activity_type' => $assignment?->projectActivity?->activityType?->name ?? $assignment?->projectActivity?->name ?? 'Activity',
+            'worker_id' => $worker?->id,
+            'worker' => $worker?->name ?? 'Worker',
+            'worker_code' => $worker ? 'USR'.str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT) : '-',
+            'company_id' => $project?->company_id,
+            'company' => $project?->company?->name ?? 'No Company',
+            'project_id' => $project?->id,
+            'project' => $project?->name ?? 'No Project',
+            'location' => $this->recordLocation($submission->latitude, $submission->longitude, $project),
+            'date' => ($submission->device_timestamp ?? $submission->server_timestamp ?? $submission->created_at)?->toDateString(),
+            'timestamp' => ($submission->device_timestamp ?? $submission->server_timestamp ?? $submission->created_at)?->toDateTimeString(),
+            'status' => $status,
+            'status_group' => $this->statusGroup($status),
+            'status_label' => $this->statusLabel($status),
+            'target' => 0,
+            'completed' => $status === 'approved' ? 1 : 0,
+            'has_photo' => filled($submission->image_path),
+            'has_remark' => filled($submission->remark),
+            'description' => $submission->remark ?: 'Worker submitted field evidence.',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function sessionRow(ActivitySession $session): array
+    {
+        $assignment = $session->assignment;
+        $project = $assignment?->project;
+        $worker = $session->worker;
+        $status = $session->status;
+
+        return [
+            'id' => 'SE'.$session->id,
+            'type' => 'session',
+            'title' => $assignment?->projectActivity?->name ?? 'Activity Session',
+            'activity_type' => $assignment?->projectActivity?->activityType?->name ?? $assignment?->projectActivity?->name ?? 'Activity',
+            'worker_id' => $worker?->id,
+            'worker' => $worker?->name ?? 'Worker',
+            'worker_code' => $worker ? 'USR'.str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT) : '-',
+            'company_id' => $project?->company_id,
+            'company' => $project?->company?->name ?? 'No Company',
+            'project_id' => $project?->id,
+            'project' => $project?->name ?? 'No Project',
+            'location' => $this->recordLocation($session->end_latitude ?? $session->start_latitude, $session->end_longitude ?? $session->start_longitude, $project),
+            'date' => ($session->completed_at ?? $session->started_at ?? $session->created_at)?->toDateString(),
+            'timestamp' => ($session->completed_at ?? $session->started_at ?? $session->created_at)?->toDateTimeString(),
+            'status' => $status,
+            'status_group' => $this->statusGroup($status),
+            'status_label' => $this->statusLabel($status),
+            'target' => (int) $session->expected_duration_minutes,
+            'completed' => $status === 'completed' ? 1 : 0,
+            'has_photo' => filled($session->start_image_path) || filled($session->end_image_path),
+            'has_remark' => filled($session->remark),
+            'description' => $session->remark ?: 'Session duration: '.($session->actual_duration_minutes ?? 0).' minutes.',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function issueRow(ActivityReport $report): array
+    {
+        $assignment = $report->assignment;
+        $project = $assignment?->project;
+        $worker = $report->worker;
+
+        return [
+            'id' => 'R'.$report->id,
+            'type' => 'report',
+            'title' => $report->title,
+            'activity_type' => Str::of($report->report_type)->replace('_', ' ')->title()->toString(),
+            'worker_id' => $worker?->id,
+            'worker' => $worker?->name ?? 'Worker',
+            'worker_code' => $worker ? 'USR'.str_pad((string) $worker->id, 3, '0', STR_PAD_LEFT) : '-',
+            'company_id' => $project?->company_id,
+            'company' => $project?->company?->name ?? 'No Company',
+            'project_id' => $project?->id,
+            'project' => $project?->name ?? 'No Project',
+            'location' => $this->recordLocation($report->latitude, $report->longitude, $project),
+            'date' => $report->created_at?->toDateString(),
+            'timestamp' => $report->created_at?->toDateTimeString(),
+            'status' => $report->status,
+            'status_group' => $this->statusGroup($report->status),
+            'status_label' => $this->statusLabel($report->status),
+            'target' => 0,
+            'completed' => $report->status === 'resolved' ? 1 : 0,
+            'has_photo' => filled($report->image_path),
+            'has_remark' => true,
+            'description' => $report->description,
+        ];
+    }
+
+    private function statusGroup(?string $status): string
+    {
+        return match ($status) {
+            'completed', 'approved', 'resolved' => 'completed',
+            'assigned', 'in_progress', 'open', 'in_review' => 'in_progress',
+            'pending', 'pending_approval' => 'pending',
+            'rejected' => 'rejected',
+            default => 'pending',
+        };
+    }
+
+    private function statusLabel(?string $status): string
+    {
+        return match ($status) {
+            'pending_approval' => 'Pending Review',
+            'in_progress' => 'In Progress',
+            'in_review' => 'In Review',
+            default => Str::of((string) $status)->replace('_', ' ')->title()->toString(),
+        };
+    }
+
+    private function recordLocation(mixed $latitude, mixed $longitude, ?Project $project): string
+    {
+        if (filled($latitude) && filled($longitude)) {
+            return $latitude.', '.$longitude;
+        }
+
+        return $this->projectLocation($project);
+    }
+
+    private function projectLocation(?Project $project): string
+    {
+        return collect([$project?->area, $project?->city, $project?->state])
+            ->filter()
+            ->join(', ') ?: 'Location not available';
     }
 }

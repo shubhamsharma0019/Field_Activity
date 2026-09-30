@@ -46,7 +46,6 @@ class ProjectActivityPageController extends Controller
         ProjectActivity::create($validated);
 
         return redirect()
-            ->route('web.assignments.index')
-            ->with('status', 'Project activity created. You can assign it to a worker now.');
+            ->route('web.assignments.index');
     }
 }

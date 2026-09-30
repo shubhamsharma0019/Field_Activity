@@ -45,9 +45,6 @@
                         <svg class="icon small"><use href="#building"/></svg>
                         <select required>
                             <option value="">Select company</option>
-                            <option>ABC Company</option>
-                            <option>XYZ Pvt Ltd</option>
-                            <option>GreenTech</option>
                         </select>
                     </span>
                 </label>
@@ -58,9 +55,6 @@
                         <svg class="icon small"><use href="#folder"/></svg>
                         <select required>
                             <option value="">Select project</option>
-                            <option>City Clean Drive</option>
-                            <option>Market Survey</option>
-                            <option>River Awareness</option>
                         </select>
                     </span>
                 </label>
@@ -74,15 +68,11 @@
                 </label>
 
                 <label>
-                    Activity Type <em>*</em>
+                    Work Type <em>*</em>
                     <span class="assignment-control">
                         <svg class="icon small"><use href="#list"/></svg>
                         <select required>
-                            <option value="">Select activity type</option>
-                            <option>Installation</option>
-                            <option>Survey</option>
-                            <option>Cleaning</option>
-                            <option>Campaign</option>
+                            <option value="">Select work type</option>
                         </select>
                     </span>
                 </label>
@@ -93,9 +83,6 @@
                         <svg class="icon small"><use href="#users"/></svg>
                         <select required>
                             <option value="">Select worker</option>
-                            <option>Ramesh Kumar</option>
-                            <option>Priya Sharma</option>
-                            <option>Amit Singh</option>
                         </select>
                     </span>
                 </label>
@@ -122,7 +109,7 @@
                 <p>Set how the worker will complete this assignment.</p>
 
                 <label>
-                    Activity Mode <em>*</em>
+                    Work Mode <em>*</em>
                     <select required>
                         <option>Single Submission (Photo + Location)</option>
                         <option>Start - End</option>
